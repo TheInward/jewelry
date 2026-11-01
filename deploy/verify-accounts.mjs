@@ -1,5 +1,5 @@
 import {randomBytes} from 'node:crypto';
-const base='http://39.106.108.70:8080/jewelry/';
+const base=process.env.ENROUTE_PREVIEW_URL||'http://39.106.108.70:8080/jewelry/';
 const jar=new Map();
 async function request(path,options={},depth=0){
  const response=await fetch(new URL(path,base),{...options,headers:{cookie:[...jar].map(([k,v])=>k+'='+v).join('; '),...options.headers},redirect:'manual',signal:AbortSignal.timeout(15000)});
