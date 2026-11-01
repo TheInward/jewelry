@@ -1,0 +1,12 @@
+[enroute-remi-safe]
+name=Remi PHP parallel packages for Enroute preview
+baseurl=https://mirrors.aliyun.com/remi/enterprise/8/safe/$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=https://rpms.remirepo.net/RPM-GPG-KEY-remi2018
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2021
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2022
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2023
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2024
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2025
+       https://rpms.remirepo.net/RPM-GPG-KEY-remi2026

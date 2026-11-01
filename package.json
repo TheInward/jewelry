@@ -1,0 +1,8 @@
+{
+  "name": "enroute-wordpress-study",
+  "private": true,
+  "scripts": {
+    "start": "wp-playground-cli server --port=9400 --blueprint=blueprint.json --mount=./theme:/wordpress/wp-content/themes/enroute-study --mount=./reference:/wordpress/wp-content/reference --mount=./setup:/wordpress/wp-content/study-setup"
+  },
+  "devDependencies": {"@wp-playground/cli": "3.1.61"}
+}

@@ -1,0 +1,26 @@
+<?php
+if(PHP_SAPI!=='cli')exit;
+$base='/srv/enroute-preview';
+$path=$base.'/jewelry/wp-config.php';
+$source=file_get_contents($path);
+$old="'http://39.106.108.70/jewelry'";
+$new="'http://39.106.108.70:8080/jewelry'";
+$source=str_replace($old,$new,$source,$count);
+if($count!==2)throw new RuntimeException('Unexpected WordPress URL config; migration stopped.');
+copy($path,$base.'/backups/wp-config.before-port8080.php');chmod($base.'/backups/wp-config.before-port8080.php',0600);
+file_put_contents($path,$source);
+$config='/etc/nginx/conf.d/clipflow.conf';
+$nginx=file_get_contents($config);
+$nginx=str_replace("    include /etc/nginx/enroute-public-locations.conf;\n",'',$nginx,$count);
+if($count!==1)throw new RuntimeException('Unexpected Clipflow config; migration stopped.');
+copy($config,$base.'/clipflow.before-port8080.conf');
+file_put_contents($config,$nginx);
+$accessPath='/root/enroute-preview-access.json';
+$access=json_decode(file_get_contents($accessPath),true,512,JSON_THROW_ON_ERROR);
+$access['preview_url']='http://39.106.108.70:8080/jewelry/';
+file_put_contents($accessPath,json_encode($access,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+$_SERVER['HTTP_HOST']='39.106.108.70:8080';$_SERVER['REQUEST_URI']='/jewelry/';
+require $base.'/jewelry/wp-load.php';
+update_option('home',$access['preview_url']);update_option('siteurl',$access['preview_url']);
+flush_rewrite_rules();
+echo "WordPress URLs migrated to port 8080; Clipflow route restored.\n";

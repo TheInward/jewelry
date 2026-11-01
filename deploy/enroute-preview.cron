@@ -1,0 +1,1 @@
+*/5 * * * * enroute /opt/remi/php83/root/usr/bin/php /srv/enroute-preview/jewelry/wp-cron.php > /dev/null 2>&1

@@ -1,0 +1,10 @@
+node_modules/
+.runtime/
+.DS_Store
+reference/raw/
+dist/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
