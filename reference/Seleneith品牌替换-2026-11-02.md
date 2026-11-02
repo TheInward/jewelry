@@ -13,3 +13,7 @@
 正式域名不代表完成商业上线。开发提示、noindex、支付未接通状态仍保留。实体礼品卡等导入商品须在正式销售前审核兑换机制及库存；积分体系尚未实现。商品材料、性能等源站描述需按实际供货核验。
 
 服务器私有备份：/home/customer/jewelry-migration/seleneith-brand-20261102/before-theme.tar.gz 与 before-brand.sql。更新脚本：deploy/update-seleneith-brand.php（不覆盖订单和来源元数据）。
+
+## 已确认的联系资料
+
+用户随后提供：联系邮箱 seleneith@163.com，品牌/主体名称 seleneith，国家 China。展示为 Seleneith；未据此声称是已注册公司。已更新联系、品牌、隐私、条款、配送与退货页面的联系信息，页脚邮件链接及 WooCommerce 客户邮件页脚。配送、保修与退货细则仍待确认；未变更 SMTP 发件地址、管理员邮箱或 WooCommerce 税务/商店地址，未测试邮箱投递。
