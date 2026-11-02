@@ -16,6 +16,8 @@ if(!$('header .tools'))return;
 let wishlistReady=Promise.resolve();
 let products=JSON.parse($('#catalog-data')?.textContent||'[]'),limit=24,saved=[];
 try{const stored=JSON.parse(localStorage.getItem('study-wishlist')||'[]');if(Array.isArray(stored))saved=stored.filter(Number.isInteger).slice(0,100)}catch{}
+function syncWishlist(){document.querySelectorAll('[data-wish]').forEach(b=>{const selected=saved.includes(Number(b.dataset.wish));b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected))})}
+syncWishlist();
 const image=(p,n=0)=>{const src=p.images[n]||p.images[0]||'';return src?src+(src.includes('?')?'&':'?')+'width=650':''};
 function colorLinks(p){const colors=p.colors;if(!colors?.values?.length)return '';const palette={gold:'#ecd78d',silver:'#d2d3d5','rose gold':'#d6aaa0',black:'#222',white:'#f5f5f5',green:'#629276',blue:'#638bba','marine blue':'#79b8ca'};return '<div class="card-colors">'+colors.values.map(color=>{const url=new URL(p.url);url.searchParams.set('attribute_'+colors.attribute,color);return '<a class="card-color" style="--swatch:'+(palette[color.toLowerCase()]||'#ddd')+'" href="'+esc(url.href)+'" aria-label="'+esc(p.title+' — '+color)+'" title="'+esc(color)+'"></a>'}).join('')+'</div>';}
 function card(p){
@@ -42,6 +44,7 @@ function render(){
  $('#product-grid').innerHTML=rows.slice(0,limit).map(card).join('')||'<p class="empty">'+esc(t('No matching products.'))+'</p>';
  $('#result-count').textContent=rows.length+' '+t('products');
  $('.load-more').hidden=rows.length<=limit;
+ syncWishlist();
 }
 if($('#product-grid')&&$('#filter-groups')){
  const groups={'discount':'Discount','highlight':'Highlight','metal_color_v2':'Metal Color','necklace_style_v2':'Necklace Style','ring_style_v2':'Rings','earring_style_v2':'Earrings','stone_v2':'Stone','accent_color_v2':'Accent Color','theme_v2':'Theme'};
@@ -94,7 +97,7 @@ document.addEventListener('click',async e=>{
  const button=e.target.closest('button');if(!button)return;
  try{
   if(button.dataset.wish||button.dataset.open==='wishlist'||button.dataset.move)await wishlistReady;
-  if(button.dataset.move){const id=Number(button.dataset.move);saved=[...new Set([...saved,id])];if(studyConfig.loggedIn)saved=await api('study_wishlist',{add:id});else try{localStorage.setItem('study-wishlist',JSON.stringify(saved))}catch{};cartView(await cart({remove:button.dataset.key}));return;}
+  if(button.dataset.move){const id=Number(button.dataset.move);saved=[...new Set([...saved,id])];if(studyConfig.loggedIn)saved=await api('study_wishlist',{add:id});else try{localStorage.setItem('study-wishlist',JSON.stringify(saved))}catch{};syncWishlist();cartView(await cart({remove:button.dataset.key}));return;}
   if(button.dataset.add||button.dataset.remove||button.hasAttribute('data-qty')){
    button.disabled=true;
    try{
@@ -107,7 +110,7 @@ document.addEventListener('click',async e=>{
   if(button.dataset.wish){
    const id=Number(button.dataset.wish);saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id].slice(-100);
    if(studyConfig.loggedIn){saved=await api('study_wishlist',saved.includes(id)?{add:id}:{remove:id})}else{try{localStorage.setItem('study-wishlist',JSON.stringify(saved))}catch{}}
-   button.classList.toggle('selected',saved.includes(id));toast(t(saved.includes(id)?'Saved to your wishlist':'Removed from wishlist'));
+   syncWishlist();toast(t(saved.includes(id)?'Saved to your wishlist':'Removed from wishlist'));
   }
   if(button.dataset.open==='cart')cartView(await cart());
   if(button.dataset.open==='wishlist'){
@@ -129,6 +132,6 @@ document.addEventListener('click',async e=>{
  }catch(err){toast(err.message)}
 });
 
-if(studyConfig.loggedIn)wishlistReady=api('study_wishlist',{merge:saved.join(',')}).then(ids=>{saved=ids;try{localStorage.removeItem('study-wishlist')}catch{}document.querySelectorAll('[data-wish]').forEach(b=>b.classList.toggle('selected',saved.includes(Number(b.dataset.wish))))}).catch(()=>{});
+if(studyConfig.loggedIn)wishlistReady=api('study_wishlist',{merge:saved.join(',')}).then(ids=>{saved=ids;try{localStorage.removeItem('study-wishlist')}catch{}syncWishlist()}).catch(()=>{});
 cart().catch(()=>{});
 })();
