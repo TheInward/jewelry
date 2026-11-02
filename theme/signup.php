@@ -35,11 +35,11 @@ function study_signup() {
         $coupon->set_individual_use(true);
         $coupon->set_email_restrictions([$email]);
         $coupon->set_date_expires(time() + 30 * DAY_IN_SECONDS);
-        $coupon->set_description('Development preview signup offer');
+        $coupon->set_description('Seleneith welcome offer');
         $id = $coupon->save();
         if (!$id) throw new Exception('Could not create a coupon.');
         update_post_meta($id, '_study_signup_hash', $hash);
-        $sent = wp_mail($email, 'Your 10% jewelry discount code', "Your code: {$coupon->get_code()}\n\nApply it at checkout within 30 days.");
+        $sent = wp_mail($email, 'Your Seleneith 10% discount code', "Welcome to Seleneith.\n\nYour code: {$coupon->get_code()}\n\nApply it at checkout within 30 days.");
         wp_send_json_success(['code'=>$coupon->get_code(),'emailed'=>(bool)$sent]);
     } catch (Throwable $e) {
         wp_send_json_error(['message'=>'Could not create your code. Please try again.'], 500);

@@ -103,7 +103,9 @@
     "Intimate Textures": "Intimate Textures",
     "Natural Stones": "Natural Stones",
     "Street Icons": "Street Icons",
-    "Waterproof Jewelry": "Waterproof Jewelry"
+    "Waterproof Jewelry": "Waterproof Jewelry",
+    "About Seleneith": "About Seleneith",
+    "Jewelry for your everyday style": "Jewelry for your everyday style"
   },
   "pl": {
     "Gold Collection": "Kolekcja w kolorze złota",
@@ -227,7 +229,9 @@
     "Date, old to new": "Od najstarszych",
     "Discount": "Rabat",
     "Highlight": "Wyróżnione",
-    "Looking for something else?": "Szukasz czegoś innego?"
+    "Looking for something else?": "Szukasz czegoś innego?",
+    "About Seleneith": "O Seleneith",
+    "Jewelry for your everyday style": "Biżuteria na co dzień"
   },
   "es": {
     "Gold Collection": "Colección en oro",
@@ -351,7 +355,9 @@
     "Date, old to new": "Del más antiguo al más reciente",
     "Discount": "Descuento",
     "Highlight": "Destacados",
-    "Looking for something else?": "¿Buscas algo más?"
+    "Looking for something else?": "¿Buscas algo más?",
+    "About Seleneith": "Sobre Seleneith",
+    "Jewelry for your everyday style": "Joyas para tu estilo de cada día"
   },
   "fr": {
     "Gold Collection": "Bijoux Dorés",
@@ -459,7 +465,9 @@
     "Date, old to new": "Du plus ancien au plus récent",
     "Discount": "Réduction",
     "Highlight": "À la une",
-    "Looking for something else?": "Vous cherchez autre chose ?"
+    "Looking for something else?": "Vous cherchez autre chose ?",
+    "About Seleneith": "À propos de Seleneith",
+    "Jewelry for your everyday style": "Des bijoux pour votre style au quotidien"
   },
   "de": {
     "Gold Collection": "Gold-Kollektion",
@@ -583,7 +591,9 @@
     "Date, old to new": "Datum aufsteigend",
     "Discount": "Rabatt",
     "Highlight": "Highlights",
-    "Looking for something else?": "Suchen Sie etwas anderes?"
+    "Looking for something else?": "Suchen Sie etwas anderes?",
+    "About Seleneith": "Über Seleneith",
+    "Jewelry for your everyday style": "Schmuck für deinen Stil im Alltag"
   },
   "nl": {
     "Gold Collection": "Goudcollectie",
@@ -707,7 +717,9 @@
     "Date, old to new": "Oudste eerst",
     "Discount": "Korting",
     "Highlight": "Uitgelicht",
-    "Looking for something else?": "Zoek je iets anders?"
+    "Looking for something else?": "Zoek je iets anders?",
+    "About Seleneith": "Over Seleneith",
+    "Jewelry for your everyday style": "Sieraden voor jouw dagelijkse stijl"
   },
   "it": {
     "Gold Collection": "Collezione dorata",
@@ -831,7 +843,9 @@
     "Date, old to new": "Dal meno recente",
     "Discount": "Sconto",
     "Highlight": "In evidenza",
-    "Looking for something else?": "Cerchi altro?"
+    "Looking for something else?": "Cerchi altro?",
+    "About Seleneith": "Informazioni su Seleneith",
+    "Jewelry for your everyday style": "Gioielli per il tuo stile quotidiano"
   },
   "sv": {
     "Gold Collection": "Kollektionen i guld",
@@ -939,7 +953,9 @@
     "Date, old to new": "Äldsta först",
     "Discount": "Rabatt",
     "Highlight": "Utvalt",
-    "Looking for something else?": "Letar du efter något annat?"
+    "Looking for something else?": "Letar du efter något annat?",
+    "About Seleneith": "Om Seleneith",
+    "Jewelry for your everyday style": "Smycken för din vardagsstil"
   },
   "ja": {
     "Gold Collection": "ゴールドコレクション",
@@ -1063,7 +1079,9 @@
     "Date, old to new": "古い順",
     "Discount": "割引",
     "Highlight": "注目",
-    "Looking for something else?": "ほかの商品をお探しですか？"
+    "Looking for something else?": "ほかの商品をお探しですか？",
+    "About Seleneith": "Seleneithについて",
+    "Jewelry for your everyday style": "毎日のスタイルに寄り添うジュエリー"
   },
   "ko": {
     "Gold Collection": "골드 컬렉션",
@@ -1187,7 +1205,9 @@
     "Date, old to new": "오래된순",
     "Discount": "할인",
     "Highlight": "추천",
-    "Looking for something else?": "다른 상품을 찾으시나요?"
+    "Looking for something else?": "다른 상품을 찾으시나요?",
+    "About Seleneith": "Seleneith 소개",
+    "Jewelry for your everyday style": "일상 스타일을 위한 주얼리"
   },
   "pt-pt": {
     "Gold Collection": "Coleção em ouro",
@@ -1311,7 +1331,9 @@
     "Date, old to new": "Mais antigos primeiro",
     "Discount": "Desconto",
     "Highlight": "Destaques",
-    "Looking for something else?": "Procura outra coisa?"
+    "Looking for something else?": "Procura outra coisa?",
+    "About Seleneith": "Sobre a Seleneith",
+    "Jewelry for your everyday style": "Joias para o seu estilo diário"
   },
   "el": {
     "Gold Collection": "Συλλογή με χρυσό",
@@ -1435,7 +1457,9 @@
     "Date, old to new": "Παλαιότερα πρώτα",
     "Discount": "Έκπτωση",
     "Highlight": "Προτεινόμενα",
-    "Looking for something else?": "Ψάχνετε κάτι άλλο;"
+    "Looking for something else?": "Ψάχνετε κάτι άλλο;",
+    "About Seleneith": "Σχετικά με τη Seleneith",
+    "Jewelry for your everyday style": "Κοσμήματα για το καθημερινό σας στυλ"
   },
   "cs": {
     "Gold Collection": "Zlatá kolekce",
@@ -1559,7 +1583,9 @@
     "Date, old to new": "Od nejstarších",
     "Discount": "Sleva",
     "Highlight": "Doporučené",
-    "Looking for something else?": "Hledáte něco jiného?"
+    "Looking for something else?": "Hledáte něco jiného?",
+    "About Seleneith": "O Seleneith",
+    "Jewelry for your everyday style": "Šperky pro váš každodenní styl"
   },
   "hu": {
     "Gold Collection": "Arany kollekció",
@@ -1683,6 +1709,8 @@
     "Date, old to new": "Legrégebbiek elöl",
     "Discount": "Kedvezmény",
     "Highlight": "Kiemelt",
-    "Looking for something else?": "Mást keres?"
+    "Looking for something else?": "Mást keres?",
+    "About Seleneith": "A Seleneith-ről",
+    "Jewelry for your everyday style": "Ékszerek a mindennapi stílusodhoz"
   }
 }
