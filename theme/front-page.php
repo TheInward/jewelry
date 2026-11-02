@@ -11,6 +11,9 @@ get_header();
       <img src="https://cdn.shopify.com/s/files/1/1782/4093/files/KV_1_mb.jpg?v=1793269798&amp;width=768" alt="The Holiday Dress Code — Jewelry required. Shop Now" fetchpriority="high">
     </picture>
   </a>
+  <section class="mobile-category-section" aria-label="Shop by category"><div class="mobile-category-track">
+  <?php foreach(['new-arrival'=>['New In','mb_20261012-114032_250x.png?v=1791777192'],'bestseller'=>['Bestsellers','orin_250x.jpg?v=1788845215'],'necklaces'=>['Necklaces','water_250x.jpg?v=1788845240'],'bracelet-anklet'=>['Bracelets','bracelet-mb_250x.jpg?v=1778295646'],'earrings'=>['Earrings','mb_20261012-115039_250x.png?v=1791777220'],'rings'=>['Rings','ring-mb_782b402f-ed68-4db0-a91e-6a8532908bb9_250x.jpg?v=1778312288']] as $slug=>[$label,$art]): ?><a class="mobile-category" href="<?php echo esc_url(study_collection_url($slug)); ?>"><img src="https://cdn.shopify.com/s/files/1/1782/4093/files/<?php echo esc_attr($art); ?>" alt="" loading="lazy"><span><?php echo esc_html(study_t($label)); ?></span></a><?php endforeach; ?>
+  </div><div class="mobile-category-progress" aria-hidden="true"></div></section>
   <section class="home-categories" aria-label="<?php echo esc_attr(study_t('Shop by category')); ?>">
     <?php foreach (['necklaces','earrings','bracelet-anklet','rings'] as $category):
       $term = get_term_by('slug', $category, 'product_cat');
@@ -29,9 +32,11 @@ get_header();
       </a>
     <?php endforeach; ?>
   </section>
+  <?php study_mobile_editorial('gold-collection','The Gold Edit','mb_f99541fe-7337-4a6b-8be5-05f1bf382bbc.jpg?v=1793407844','gold'); study_mobile_editorial('silver-collection','The Silver Side','mb_1dab9662-ecee-4f6d-b408-255f045d5c5f.jpg?v=1793407856','silver'); ?>
   <?php foreach (['new-arrival'=>'New Drops Every Thursday','bestseller'=>'Trending Now'] as $scope=>$heading): ?>
   <section class="home-products-section"><div class="section-heading"><h2><?php echo esc_html(study_t($heading)); ?></h2><a href="<?php echo esc_url(study_collection_url($scope)); ?>"><?php echo esc_html(study_t('Shop The Collection')); ?> ↗</a><div class="slider-controls"><button type="button" data-slide="-1" aria-label="Previous products">←</button><button type="button" data-slide="1" aria-label="Next products">→</button></div></div><div class="home-product-track"><?php foreach(study_home_products($scope) as $item) study_product_card($item); ?></div></section>
   <?php endforeach; ?>
+  <?php study_mobile_editorial('jewelry-set','Jewelry Sets','Jewelry_Sets_mb_0929.png?v=1790668363','sets'); ?>
   <section class="reward-highlight"><h2><?php echo esc_html(study_t('Points on every order, gifts on us.')); ?></h2><p><?php echo esc_html(study_t('Explore membership benefits and your account.')); ?></p><a class="outline-link" href="<?php echo esc_url(home_url('/pages/rewards/')); ?>"><?php echo esc_html(study_t('Log In or Sign Up')); ?></a><a class="outline-link" href="<?php echo esc_url(home_url('/pages/track-my-order/')); ?>"><?php echo esc_html(study_t('Check Order Status')); ?></a><div class="reward-benefits"><?php foreach(['referral-earn.svg'=>'Earn Points','referral-jewelry.svg'=>'Redeem Free Jewelry','referral-birthday.svg'=>'Exclusive Birthday Gift'] as $icon=>$label): ?><div><img src="https://cdn.shopify.com/s/files/1/1782/4093/t/650/assets/<?php echo esc_attr($icon); ?>" alt="" loading="lazy"><p><?php echo esc_html(study_t($label)); ?></p></div><?php endforeach; ?></div></section>
   <section class="brand-values" aria-label="Brand values"><?php foreach(['Fair Pricing','Ethically Made','30-Day Return','100-Day Warranty'] as $label): ?><a href="<?php echo esc_url(home_url('/pages/shipping-return/')); ?>"><?php echo esc_html(study_t($label)); ?></a><?php endforeach; ?></section>
   <section class="press-section"><h2><?php echo esc_html(study_t('As seen on')); ?></h2><div><?php foreach(['elle.png'=>'ELLE','wwd.png'=>'WWD','nylon-logo.jpg'=>'NYLON','the-cut.png'=>'The Cut','instyle.png'=>'InStyle'] as $file=>$label): ?><img src="https://cdn.shopify.com/s/files/1/1782/4093/files/<?php echo esc_attr($file); ?>?width=300" alt="<?php echo esc_attr($label); ?>" loading="lazy"><?php endforeach; ?></div></section>

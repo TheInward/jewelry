@@ -17,13 +17,14 @@ let wishlistReady=Promise.resolve();
 let products=JSON.parse($('#catalog-data')?.textContent||'[]'),limit=24,saved=[];
 try{const stored=JSON.parse(localStorage.getItem('study-wishlist')||'[]');if(Array.isArray(stored))saved=stored.filter(Number.isInteger).slice(0,100)}catch{}
 const image=(p,n=0)=>{const src=p.images[n]||p.images[0]||'';return src?src+(src.includes('?')?'&':'?')+'width=650':''};
+function colorLinks(p){const colors=p.colors;if(!colors?.values?.length)return '';const palette={gold:'#ecd78d',silver:'#d2d3d5','rose gold':'#d6aaa0',black:'#222',white:'#f5f5f5',green:'#629276',blue:'#638bba','marine blue':'#79b8ca'};return '<div class="card-colors">'+colors.values.map(color=>{const url=new URL(p.url);url.searchParams.set('attribute_'+colors.attribute,color);return '<a class="card-color" style="--swatch:'+(palette[color.toLowerCase()]||'#ddd')+'" href="'+esc(url.href)+'" aria-label="'+esc(p.title+' — '+color)+'" title="'+esc(color)+'"></a>'}).join('')+'</div>';}
 function card(p){
  return '<article class="product-card"><button class="wish '+(saved.includes(p.id)?'selected':'')+'" data-wish="'+p.id+'" aria-label="'+esc(t('Your Wishlist')+': '+p.title)+'">♡</button>'+
  (p.tags.some(tag=>tag.includes('waterproof'))?'<span class="badge">'+esc(t('Waterproof'))+'</span>':'')+
  '<a class="product-image" href="'+esc(p.url)+'"><img src="'+esc(image(p))+'" alt="'+esc(p.title)+'" loading="lazy">'+
  (p.images[1]?'<img class="second" src="'+esc(image(p,1))+'" alt="" loading="lazy">':'')+'</a>'+
  (p.type==='variable'?'<a class="quick-add home-add" href="'+esc(p.url)+'">'+esc(t('Choose options'))+'</a>':'<button class="quick-add" style="position:relative;width:100%" data-add="'+p.id+'" '+(p.available?'':'disabled')+'>'+esc(t(p.available?'Add to bag':'Sold out'))+'</button>')+
- '<a class="product-name" href="'+esc(p.url)+'">'+esc(p.title)+'</a><span class="price">'+esc(money(p.price))+(p.regular>p.price?'<del>'+esc(money(p.regular))+'</del>':'')+'</span></article>';
+ '<a class="product-name" href="'+esc(p.url)+'">'+esc(p.title)+'</a><span class="price">'+esc(money(p.price))+(p.regular>p.price?'<del>'+esc(money(p.regular))+'</del>':'')+'</span>'+colorLinks(p)+'</article>';
 }
 function render(){
  if(!$('#product-grid'))return;
@@ -71,7 +72,7 @@ document.addEventListener('keydown',e=>{
   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
  }
 });
-$('.mobile-menu-toggle').onclick=()=>$('.mobile-menu-toggle').setAttribute('aria-expanded',$('.nav').classList.toggle('mobile-open'));
+$('.mobile-menu-toggle').onclick=()=>{const open=$('.nav').classList.toggle('mobile-open');$('.mobile-menu-toggle').setAttribute('aria-expanded',open);document.body.classList.toggle('mobile-nav-open',open);if(open)$('#mobile-menu-close')?.focus()};
 async function api(action,values={}){
  const response=await fetch(studyConfig.ajax,{method:'POST',body:new URLSearchParams({action,nonce:studyConfig.nonce,...values}),credentials:'same-origin',cache:'no-store'});
  const payload=await response.json();
@@ -80,7 +81,7 @@ async function api(action,values={}){
 }
 let cartQueue=Promise.resolve();
 function cart(values={}){
- const pending=cartQueue.then(()=>api('study_cart',values)).then(data=>{if(data.currency!==studyLocale.currency)throw Error('Currency changed. Please refresh this page.');$('#cart-count').textContent=data.count;return data});
+ const pending=cartQueue.then(()=>api('study_cart',values)).then(data=>{if(data.currency!==studyLocale.currency)throw Error('Currency changed. Please refresh this page.');$('#cart-count').textContent=data.count;$('#cart-count').hidden=data.count===0;return data});
  cartQueue=pending.catch(()=>{});return pending;
 }
 function cartView(c){

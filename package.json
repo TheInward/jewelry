@@ -2,7 +2,11 @@
   "name": "enroute-wordpress-study",
   "private": true,
   "scripts": {
-    "start": "wp-playground-cli server --port=9400 --blueprint=blueprint.json --mount=./theme:/wordpress/wp-content/themes/enroute-study --mount=./reference:/wordpress/wp-content/reference --mount=./setup:/wordpress/wp-content/study-setup"
+    "start": "wp-playground-cli server --port=9400 --blueprint=blueprint.json --mount=./theme:/wordpress/wp-content/themes/enroute-study --mount=./reference:/wordpress/wp-content/reference --mount=./setup:/wordpress/wp-content/study-setup",
+    "verify:mobile": "node deploy/verify-mobile.mjs"
   },
-  "devDependencies": {"@wp-playground/cli": "3.1.61"}
+  "devDependencies": {
+    "@wp-playground/cli": "3.1.61",
+    "playwright-core": "1.64.1"
+  }
 }

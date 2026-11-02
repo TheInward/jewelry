@@ -31,7 +31,7 @@ function study_catalog_data($scope = null, $ids = null) {
     foreach ($query->posts as $post) {
         $p = wc_get_product($post->ID);
         if (!$p || !$p->is_visible()) continue;
-        $out[] = ['id'=>$p->get_id(), 'source_id'=>(int)preg_replace('/^REF-/', '', $p->get_sku()), 'title'=>wp_specialchars_decode($p->get_name(), ENT_QUOTES), 'url'=>get_permalink($p->get_id()), 'price'=>(float)$p->get_price(), 'regular'=>(float)($p->is_type('variable')?$p->get_variation_regular_price('min',false):$p->get_regular_price()), 'images'=>$p->get_meta('_study_images')?:[], 'tags'=>study_product_tags($p),'type'=>$p->get_type(),'created'=>(int)($p->get_meta('_study_source_created')?:($p->get_date_created()?$p->get_date_created()->getTimestamp():0)),'sales'=>(int)$p->get_total_sales(), 'available'=>$p->is_in_stock()];
+        $out[] = ['id'=>$p->get_id(), 'source_id'=>(int)preg_replace('/^REF-/', '', $p->get_sku()), 'title'=>wp_specialchars_decode($p->get_name(), ENT_QUOTES), 'url'=>get_permalink($p->get_id()), 'price'=>(float)$p->get_price(), 'regular'=>(float)($p->is_type('variable')?$p->get_variation_regular_price('min',false):$p->get_regular_price()), 'images'=>$p->get_meta('_study_images')?:[], 'tags'=>study_product_tags($p),'colors'=>study_product_colors($p),'type'=>$p->get_type(),'created'=>(int)($p->get_meta('_study_source_created')?:($p->get_date_created()?$p->get_date_created()->getTimestamp():0)),'sales'=>(int)$p->get_total_sales(), 'available'=>$p->is_in_stock()];
     }
     return $out;
 }

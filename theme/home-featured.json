@@ -18,5 +18,23 @@
     "orin-large-hoop-earrings",
     "vice-hoop-earrings-in-gold",
     "osiris-earrings"
+  ],
+  "gold-collection": [
+    "waterdrop-necklace",
+    "rain-flower-stone-necklace",
+    "harmonic-hour-multicolored-watch-bracelet",
+    "serenade-of-butterfly-orchid-ring"
+  ],
+  "silver-collection": [
+    "silver-star-necklace",
+    "waterdrop-earrings-in-marine-blue",
+    "relic-cross-charm-hand-chain",
+    "orchid-stacking-bangle-set-in-silver"
+  ],
+  "jewelry-set": [
+    "waterdrop-whimsical-romance-stone-necklace-set",
+    "pink-petal-layered-set",
+    "orchid-stacking-bangle-set-in-gold",
+    "orchid-stacking-ring-set-in-gold"
   ]
 }
