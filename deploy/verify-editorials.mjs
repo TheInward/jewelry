@@ -1,7 +1,7 @@
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const base=process.env.ENROUTE_PREVIEW_URL||'https://mrnobodys1.sg-host.com/';
+const base=process.env.ENROUTE_PREVIEW_URL||'https://seleneith.com/';
 fs.mkdirSync('.runtime/editorial-review',{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true});const errors=[];
 try{

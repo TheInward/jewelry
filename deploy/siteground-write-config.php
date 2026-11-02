@@ -8,7 +8,7 @@ foreach(['database','user','password'] as $key)if(empty($input[$key])||!is_strin
 foreach(['database','user'] as $key)if(!preg_match('/^[A-Za-z0-9_]+$/',$input[$key]))throw new RuntimeException('Invalid database identifier.');
 $pdo=new PDO('mysql:host=localhost;dbname='.$input['database'].';charset=utf8mb4',$input['user'],$input['password'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
 if($pdo->query('SHOW TABLES')->fetch())throw new RuntimeException('Destination database is not empty; stopped.');
-$values=['DB_NAME'=>$input['database'],'DB_USER'=>$input['user'],'DB_PASSWORD'=>$input['password'],'DB_HOST'=>'localhost','DB_CHARSET'=>'utf8mb4','DB_COLLATE'=>'','WP_HOME'=>'https://mrnobodys1.sg-host.com','WP_SITEURL'=>'https://mrnobodys1.sg-host.com'];
+$values=['DB_NAME'=>$input['database'],'DB_USER'=>$input['user'],'DB_PASSWORD'=>$input['password'],'DB_HOST'=>'localhost','DB_CHARSET'=>'utf8mb4','DB_COLLATE'=>'','WP_HOME'=>'https://seleneith.com','WP_SITEURL'=>'https://seleneith.com'];
 foreach(['AUTH_KEY','SECURE_AUTH_KEY','LOGGED_IN_KEY','NONCE_KEY','AUTH_SALT','SECURE_AUTH_SALT','LOGGED_IN_SALT','NONCE_SALT'] as $key)$values[$key]=bin2hex(random_bytes(48));
 $config="<?php\n";
 foreach($values as $key=>$value)$config.='define('.var_export($key,true).', '.var_export($value,true).");\n";

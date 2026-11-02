@@ -11,7 +11,7 @@ npm start
 
 本地地址：http://127.0.0.1:9400
 
-SiteGround HTTPS 预览：https://mrnobodys1.sg-host.com/ ，顾客账户：https://mrnobodys1.sg-host.com/my-account/ 。迁移记录见 `deploy/SITEGROUND.md`。
+SiteGround 当前域名：https://seleneith.com/ ，顾客账户：https://seleneith.com/my-account/ 。迁移记录见 `deploy/SITEGROUND.md`。
 
 阿里云开发预览：http://39.106.108.70:8080/jewelry/ （已放行 8080，按用户要求取消预览密码，直接显示商品）。顾客账户：http://39.106.108.70:8080/jewelry/my-account/ 。服务器环境与目录见 `deploy/DEPLOYED.md`。
 

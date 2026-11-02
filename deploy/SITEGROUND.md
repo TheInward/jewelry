@@ -1,3 +1,7 @@
+# 当前访问与部署地址
+
+站点：https://seleneith.com/ 。当前SSH主机：`ssh.seleneith.com`，端口18765，既有专用密钥和用户保持有效。WordPress目录：`/home/customer/www/seleneith.com/public_html`。以下旧临时域名内容是迁移历史记录。
+
 # SiteGround migration
 
 Target temporary domain: `https://mrnobodys1.sg-host.com`.
@@ -61,3 +65,16 @@ Pre-update theme and database backups are under `/home/customer/jewelry-migratio
 ## 首页桌面专题修复
 
 金色、银色、Jewelry Sets三个专题现有桌面左图+右侧2×2商品布局。主题备份位于私有目录 `jewelry-migration/editorial-20261102/before-theme.tar.gz`。专题价格和加购优先绑定同一默认变体，修正套装显示为单件最低价的问题。验证记录见 `reference/首页桌面专题修复-2026-11-02.md`。
+
+## 2026-11-02 正式域名样式修复
+
+SiteGround改名后WP_HOME/WP_SITEURL和HTTPS跳转仍指向旧临时域名，导致页面引用不可达的旧资源。
+
+- 私有备份：`jewelry-migration/production-domain-20261102/` 内的wp-config.php、.htaccess和before-domain.sql。
+- 将数据库中的旧HTTPS网址替换为seleneith.com（支持序列化，跳过GUID），更新WP_HOME/WP_SITEURL及HTTPS重写。
+- 删除WooCommerce Multilingual的派生模板缓存选项 `wcml_currency_switcher_template_objects` 供其重新生成；未修改币种业务配置。
+- 清除WP和SiteGround动态缓存。验证脚本默认域名已更新。
+- 新SSH主机的RSA/ED25519指纹与原来已信任的SiteGround主机一致，已核对后登记。
+- 正式域名下验证：全部CSS返回200和text/css，页面不残留旧主机名，AJAX/checkout同源，HTTP跳转至正式HTTPS；360/390/430/767px及桌面浏览器回归通过；套装加购金额一致、测试购物车清空，未提交订单或付款。
+
+运行 `node deploy/verify-domain.mjs`、`npm run verify:mobile`、`VERIFY_WIDTHS=1440 node deploy/verify-editorials.mjs` 可复核。

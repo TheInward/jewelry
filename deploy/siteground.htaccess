@@ -1,9 +1,9 @@
-# WordPress at the root of the SiteGround temporary domain.
+# WordPress at the root of the SiteGround production domain.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
-RewriteRule ^ https://mrnobodys1.sg-host.com%{REQUEST_URI} [R=301,L]
+RewriteRule ^ https://seleneith.com%{REQUEST_URI} [R=301,L]
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 RewriteBase /
 RewriteRule ^index\.php$ - [L]
