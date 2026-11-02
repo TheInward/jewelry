@@ -1,5 +1,10 @@
-<?php get_header(); if(is_front_page() || is_page('necklaces') || is_shop() || is_product_category()): ?>
-<main><picture class="hero"><source media="(max-width:600px)" srcset="https://cdn.shopify.com/s/files/1/1782/4093/files/necklace_mb.jpg?v=1763728439&width=1000"><img src="https://cdn.shopify.com/s/files/1/1782/4093/files/necklace_70d5fca5-efc4-456f-8a8f-a36d416bf4e4.jpg?v=1763725677&width=2200" alt="Necklaces collection"></picture>
-<h1 class="collection-title">Necklaces</h1><section class="catalog"><div class="catalog-toolbar"><select id="sort" aria-label="Sort by"><option value="featured">SORT BY: Featured</option value="price-up">Price, low to high</option><option value="price-down">Price, high to low</option><option value="title-up">Alphabetically, A-Z</option><option value="title-down">Alphabetically, Z-A</option><option value="new">Date, new to old</option></select><span class="result-count" id="result-count"></span><button id="filter-toggle" aria-expanded="false">FILTER &nbsp; ☷</button></div><div class="catalog-layout"><aside class="filters" aria-label="Product filters"><button id="clear-filters">CLEAR ALL</button><details open><summary>Price</summary><input type="number" id="min-price" min="0" placeholder="From $"><input type="number" id="max-price" min="0" placeholder="To $"></details><div id="filter-groups"></div></aside><div><div class="grid" id="product-grid"></div><button class="load-more">Load more</button></div></div></section></main>
-<script type="application/json" id="catalog-data"><?php echo wp_json_encode(study_catalog_data(), JSON_HEX_TAG|JSON_HEX_AMP); ?></script>
-<?php else: ?><main class="content woocommerce"><?php while(have_posts()):the_post();the_content();endwhile; ?></main><?php endif; get_footer(); ?>
+<?php
+get_header();
+if (is_front_page() || is_page('necklaces') || is_shop() || is_product_category()) {
+    get_template_part('catalog-grid');
+} else {
+    echo '<main class="content woocommerce">';
+    while (have_posts()) { the_post(); the_content(); }
+    echo '</main>';
+}
+get_footer();

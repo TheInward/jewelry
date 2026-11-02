@@ -1,1 +1,1 @@
-<?php get_header(); ?><main class="content woocommerce"><?php woocommerce_content(); ?></main><?php get_footer(); ?>
+<?php get_header(); if (is_shop() || is_product_category()) { get_template_part('catalog-grid'); } else { ?><main class="content woocommerce"><?php woocommerce_content(); ?></main><?php } get_footer(); ?>

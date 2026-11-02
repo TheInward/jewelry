@@ -26,6 +26,18 @@ The existing Alibaba site stays available during migration. Full WordPress files
 
 This migration does not complete the outstanding design, product-variation, translation, social-login or payment work documented in the comparison report.
 
+## Catalog and localization update — 2026-11-02
+
+The SiteGround site now contains 757 unique products in 53 source collections. The original 175 product IDs and admin account are retained. Header navigation and submenus use actual collection URLs and scoped queries; `/collections/` is a collection directory.
+
+WCML 5.6.3 is active in free standalone multicurrency mode with 55 configured currencies. WordPress core and WooCommerce language packs are installed for the 13 non-English locales defined in `theme/localization.php`. Main theme strings and 719 product names have local translations. Language and market cookies are independent, HttpOnly preferences; public HTML is intentionally uncached during this development stage.
+
+For a new installation, install/activate WooCommerce and `woocommerce-multilingual`, deploy the theme and `reference/{collections,catalog}.json` into `wp-content/reference`, run `deploy/import-collections.php` through WP-CLI, then initialize rates with `wp eval 'if (!study_refresh_exchange_rates()) WP_CLI::error("Rate initialization failed");'`. Install the core/plugin locale packs listed in `study_languages()`. Run `deploy/configure-commerce-localization.php` to use consistent server-rendered cart/checkout pages and disable the extra product currency switcher. This newer catalog import is separate from the original 175-product Playground seed.
+
+Use `deploy/purge-siteground-cache.php` with WP-CLI to clear this site's dynamic cache through SiteGround's official local socket protocol after a release. `wp cache flush` alone does not clear the hosting proxy cache. The purge script does not alter optimizer settings or other sites.
+
+Pre-update theme and database backups are under `/home/customer/jewelry-migration/`, outside the web root. Current feature limits and verification are recorded in `reference/功能修复验证-2026-11-02.md`. Real payments, international delivery policies and outbound email remain unconnected/unverified.
+
 ## Verification
 
 - Official WordPress core checksums passed before publication; both archive hashes matched the source.
