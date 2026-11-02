@@ -57,3 +57,7 @@ Pre-update theme and database backups are under `/home/customer/jewelry-migratio
 操作前数据库和主题备份位于服务器私有目录 `jewelry-migration/parity-20261102/`。详情源快照随仓库保存为 `reference/product-details.json`。本轮实际导入参数位于同一私有目录；未来可通过 `wp eval-file deploy/import-product-details.php /absolute/path/reference/product-details.json` 明确指定数据文件。不要在修改了正式价格/库存后未经审核重跑源数据导入。
 
 验证和未完成项见 `reference/对照完善验证-2026-11-02.md`。测试未提交订单，测试购物车和本轮测试账号已清理；SiteGround动态缓存已清除。
+
+## 首页桌面专题修复
+
+金色、银色、Jewelry Sets三个专题现有桌面左图+右侧2×2商品布局。主题备份位于私有目录 `jewelry-migration/editorial-20261102/before-theme.tar.gz`。专题价格和加购优先绑定同一默认变体，修正套装显示为单件最低价的问题。验证记录见 `reference/首页桌面专题修复-2026-11-02.md`。
