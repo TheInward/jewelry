@@ -122,6 +122,6 @@ document.addEventListener('click',async e=>{
   }
  }catch(err){toast(err.message)}
 });
-if($('#newsletter'))$('#newsletter').onsubmit=e=>{e.preventDefault();$('#newsletter-status').textContent='Preview only — email marketing is not connected.'};
+
 cart().catch(()=>{});
 })();

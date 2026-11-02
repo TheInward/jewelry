@@ -6,7 +6,7 @@ function client() {
  async function request(path,options={},depth=0) {
   const url=new URL(path,base);
   assert.equal(url.origin,new URL(base).origin);
-  const response=await fetch(url,{...options,headers:{cookie:[...jar].map(([k,v])=>k+'='+v).join('; '),...options.headers},redirect:'manual',signal:AbortSignal.timeout(30000)});
+  const response=await fetch(url,{...options,headers:{connection:'close',cookie:[...jar].map(([k,v])=>k+'='+v).join('; '),...options.headers},redirect:'manual',signal:AbortSignal.timeout(30000)});
   for(const raw of response.headers.getSetCookie()) {const pair=raw.split(';')[0],index=pair.indexOf('=');jar.set(pair.slice(0,index),pair.slice(index+1));}
   if([301,302,303].includes(response.status)&&depth<6)return request(response.headers.get('location'),{},depth+1);
   const html=await response.text();
@@ -35,7 +35,10 @@ for(const slug of (process.env.VERIFY_COMMERCE_ONLY ? [] : ['necklaces','bracele
 const home=await shopper.request('');
 settings=config(home.html);
 assert(home.headers.get('cache-control')?.includes('no-cache'),'HTML must not share cached language/currency');
-const item=catalog(home.html).find(p=>p.available&&p.price===27);
+assert(home.html.includes('class="home-hero"'),'Homepage campaign banner missing');
+assert(home.html.includes('id="signup-trigger"'),'Signup trigger missing');
+const listing=await shopper.request('collections/necklaces/');
+const item=catalog(listing.html).find(p=>p.available&&p.price===27);
 assert(item,'Baseline test product missing');
 let key;
 try {
