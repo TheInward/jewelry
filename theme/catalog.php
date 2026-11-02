@@ -13,7 +13,15 @@ function study_collection_slug() {
     }
     return is_shop() ? 'all-products-collection' : 'necklaces';
 }
-function study_collection_url($slug) { return home_url($slug === 'collections' ? '/collections/' : '/collections/'.sanitize_title($slug).'/'); }
+function study_collection_url($slug) { if($slug==='about-us')return home_url('/pages/about-us/'); return home_url($slug === 'collections' ? '/collections/' : '/collections/'.sanitize_title($slug).'/'); }
+function study_product_tags($p) {
+    $tags=$p->get_meta('_study_tags')?:[];
+    $regular=(float)$p->get_regular_price();$price=(float)$p->get_price();
+    if($p->is_type('variable')){$prices=$p->get_variation_prices(false);foreach($prices['price'] as $key=>$value){$r=(float)($prices['regular_price'][$key]??0);if($r>(float)$value && $r>0){$tags[]='discount__'.round(100*(1-(float)$value/$r)).'-off';$tags[]='highlight__sale';}}}
+    if(!$p->is_type('variable') && $regular>$price && $regular>0){$tags[]='discount__'.round(100*(1-$price/$regular)).'-off';$tags[]='highlight__sale';}
+    if(in_array('celebrity',$tags,true)||in_array('celebrity pick',$tags,true))$tags[]='highlight__celeb-pick';
+    return array_values(array_unique($tags));
+}
 function study_catalog_data($scope = null, $ids = null) {
     $args = ['post_type'=>'product', 'posts_per_page'=>-1, 'orderby'=>['menu_order'=>'ASC','ID'=>'ASC'], 'post_status'=>'publish'];
     if ($scope !== null) $args['tax_query'] = [['taxonomy'=>'product_cat','field'=>'slug','terms'=>$scope,'include_children'=>false]];
@@ -23,7 +31,7 @@ function study_catalog_data($scope = null, $ids = null) {
     foreach ($query->posts as $post) {
         $p = wc_get_product($post->ID);
         if (!$p || !$p->is_visible()) continue;
-        $out[] = ['id'=>$p->get_id(), 'source_id'=>(int)preg_replace('/^REF-/', '', $p->get_sku()), 'title'=>wp_specialchars_decode($p->get_name(), ENT_QUOTES), 'url'=>get_permalink($p->get_id()), 'price'=>(float)$p->get_price(), 'regular'=>(float)$p->get_regular_price(), 'images'=>$p->get_meta('_study_images')?:[], 'tags'=>$p->get_meta('_study_tags')?:[], 'available'=>$p->is_in_stock()];
+        $out[] = ['id'=>$p->get_id(), 'source_id'=>(int)preg_replace('/^REF-/', '', $p->get_sku()), 'title'=>wp_specialchars_decode($p->get_name(), ENT_QUOTES), 'url'=>get_permalink($p->get_id()), 'price'=>(float)$p->get_price(), 'regular'=>(float)($p->is_type('variable')?$p->get_variation_regular_price('min',false):$p->get_regular_price()), 'images'=>$p->get_meta('_study_images')?:[], 'tags'=>study_product_tags($p),'type'=>$p->get_type(),'created'=>(int)($p->get_meta('_study_source_created')?:($p->get_date_created()?$p->get_date_created()->getTimestamp():0)),'sales'=>(int)$p->get_total_sales(), 'available'=>$p->is_in_stock()];
     }
     return $out;
 }
@@ -48,6 +56,7 @@ function study_navigation() {
         'Bracelets'=>['bracelet-anklet',['bracelet-anklet','bracelets','bangles','anklet','rings-and-bracelets']],
         'Rings'=>['rings',['rings','stackable-rings','statement-rings','gold-rings','silver-rings']],
         'Earrings'=>['earrings',['earrings','dangle-earrings','hoop-earrings','stud-earrings','statement-earrings','gold-earrings','silver-earrings-1']],
-        'Collections'=>['collections',['sub-rosa','eternal-sweetness','nocturnal-glimmer','rustic-soul','by-the-beach-collection-1','sunfire-mirage','soft-rituals','vida-del-mar']]
+        'Collections'=>['collections',['sub-rosa','eternal-sweetness','nocturnal-glimmer','rustic-soul','by-the-beach-collection-1','sunfire-mirage','soft-rituals','vida-del-mar']],
+        'About Us'=>['about-us',[]]
     ];
 }

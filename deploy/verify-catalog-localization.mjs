@@ -42,7 +42,9 @@ const item=catalog(listing.html).find(p=>p.available&&p.price===27);
 assert(item,'Baseline test product missing');
 let key;
 try {
- const added=await api('study_cart',{add:item.id,price:'0.01'});key=added.items[0].key;assert.equal(added.items[0].price,27);
+ let addId=item.id;
+ if(item.type==='variable'){const page=await shopper.request(item.url);const raw=page.html.match(/data-product_variations="([^"]+)"/s)?.[1]||page.html.match(/data-product_variations='([^']+)'/s)?.[1];assert(raw,'Native variation data missing');const variants=JSON.parse(raw.replaceAll('&quot;','\"').replaceAll('&#039;',"'").replaceAll('&amp;','&'));const v=variants.find(v=>v.is_in_stock&&Number(v.display_price)===27);assert(v,'Baseline variation missing');addId=v.variation_id;}
+ const added=await api('study_cart',{add:addId,price:'0.01'});key=added.items[0].key;assert.equal(added.items[0].price,27);
  await api('study_cart',{key,quantity:2});
  for(const [market,currency] of (process.env.VERIFY_SKIP_CURRENCIES ? [] : [['HK','HKD'],['FR','EUR'],['JP','JPY'],['GB','GBP'],['US','USD']])) {
   const {html}=await shopper.request('collections/necklaces/?study_market='+market);

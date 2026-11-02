@@ -1,0 +1,29 @@
+<?php
+defined('ABSPATH') || exit;
+$parent=get_page_by_path('pages');
+$parent_id=$parent?$parent->ID:wp_insert_post(['post_type'=>'page','post_name'=>'pages','post_title'=>'Information','post_status'=>'publish']);
+$pages=[
+ 'about-us'=>['About Us','<h2>Jewelry for your everyday style</h2><p>Explore necklaces, earrings, rings and bracelets, from understated pieces to expressive designs. Browse by metal color, stone, style or occasion to find your next favorite piece.</p><p>This store is a development preview. Product imagery and branding are being prepared for launch.</p><p><a href="/collections/all-products-collection/">Explore the collection</a></p>'],
+ 'a-letter-from-us'=>['A Letter From Us','<p>We are preparing a collection of jewelry designed to make everyday styling more personal. Thank you for visiting while we build the store.</p><p>Our final brand story and launch details will be published here.</p>'],
+ 'faq'=>['Frequently Asked Questions','<details open><summary>How do I choose a product?</summary><p>Open a product page, choose the available color, size or style, then add it to your bag. Prices may change with the selected option.</p></details><details><summary>How can I change my language or currency?</summary><p>Use the language and country selectors at the top of the page. Check the currency shown at checkout before placing an order.</p></details><details><summary>How do I use a discount code?</summary><p>Enter your code in the coupon field at checkout. Signup codes are tied to the email used to request them and can be redeemed once within 30 days.</p></details><details><summary>Where are my orders?</summary><p>Sign in to your account to view orders, or use the order tracking page with your order number and billing email.</p></details><details><summary>Can I make a payment now?</summary><p>The store is currently a development preview. Live payments are not available.</p></details>'],
+ 'shipping-return'=>['Shipping & Return','<h2>Shipping</h2><p>Available shipping methods and charges are calculated at checkout using your delivery address and order contents. Delivery times, destinations and final shipping terms will be confirmed before launch.</p><h2>Returns</h2><p>Return periods, eligibility, return addresses and warranty terms will be confirmed before commercial launch. This preview does not establish a live return or warranty policy.</p><p><a href="/pages/start-a-return/">Return information</a></p>'],
+ 'jewelry-care'=>['Jewelry Care','<h2>Keep your pieces looking their best</h2><p>Store pieces separately in a dry place. Wipe gently with a soft cloth after use. Avoid abrasive cleaners and direct contact with perfume, lotions and household chemicals.</p><p>Care requirements depend on the material and finish. Check the materials listed on each product page; do not assume every piece is waterproof.</p>'],
+ 'track-my-order'=>['Track My Order','[woocommerce_order_tracking]<p>You can also <a href="/my-account/orders/">view orders in your account</a>.</p>'],
+ 'start-a-return'=>['Start a Return','<p>Returns are not open during the development preview. Once the store launches, eligibility and instructions will be published here.</p><p>For an existing order, first locate its details in <a href="/my-account/orders/">your account</a>.</p>'],
+ 'rewards'=>['Membership & Rewards','<h2>Your member account</h2><p>Sign in to view your orders and manage your addresses.</p><p>Points, birthday gifts and reward redemption are not active in this preview. Program terms will be published before rewards become available.</p><p><a href="/my-account/">Log In or Sign Up</a></p>'],
+ 'contact'=>['Contact Us','<p>Customer service contact details will be published before launch.</p><p>For order information, use <a href="/pages/track-my-order/">Track My Order</a> or <a href="/my-account/">your account</a>.</p>'],
+ 'privacy-policy'=>['Privacy Policy','<h2>Development preview privacy notice</h2><p>This store uses the information you submit to provide account access, saved addresses, shopping cart sessions, order tracking and signup discount codes. Language and market preferences may be stored in cookies. Wishlist items are currently stored in your browser.</p><p>Submitting the signup form records your email with an email-restricted coupon and attempts to send the code. Marketing platform synchronization is not enabled.</p><p>The final business identity, contact details, retention periods and privacy terms will be published before commercial launch.</p>'],
+ 'terms-and-conditions'=>['Terms and Conditions','<p>This store is a development preview. Live payment processing is not available. Prices, product information, availability and shipping settings are used for testing and may change.</p><p>Final terms of sale, business information and customer service policies will be published before commercial launch.</p>'],
+ 'press'=>['Press','<p>Brand news and press information will be published here.</p><p><a href="/pages/about-us/">About the brand</a></p>'],
+ 'blogs'=>['Journal','<h2>Jewelry care and styling</h2><p>Explore our guide to caring for your pieces.</p><p><a href="/pages/jewelry-care/">Read the jewelry care guide</a></p>']
+];
+foreach($pages as $slug=>[$title,$content]){
+ $existing=get_page_by_path('pages/'.$slug);
+ $args=['post_type'=>'page','post_status'=>'publish','post_parent'=>$parent_id,'post_name'=>$slug,'post_title'=>$title,'post_content'=>$content];
+ if($existing)$args['ID']=$existing->ID;
+ $id=wp_insert_post($args,true);if(is_wp_error($id))throw new RuntimeException($id->get_error_message());
+ update_post_meta($id,'_wp_page_template','page-information.php');
+ if($slug==='privacy-policy')update_option('wp_page_for_privacy_policy',$id);
+}
+flush_rewrite_rules();
+WP_CLI::success('Created information pages; preview business policies are explicitly marked.');

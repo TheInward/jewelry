@@ -49,3 +49,11 @@ Pre-update theme and database backups are under `/home/customer/jewelry-migratio
 - Plain HTTP redirects to HTTPS with HTTP 301. The live theme's 12 tracked files match the Git source hashes.
 - Alibaba and the existing port-80 Clipflow site remain available.
 - Reset-password email delivery and real payments are not verified or connected by this migration.
+
+## 2026-11-02 对照完善批次
+
+已部署首页/导航/页脚、13个信息页、独立搜索、账号收藏、图库及原生变体。导入723件详情，其中630件可变商品、3554个变体；34件因参考站限流暂缺。信息页业务内容目前为预览稿，会员积分未启用。
+
+操作前数据库和主题备份位于服务器私有目录 `jewelry-migration/parity-20261102/`。详情源快照随仓库保存为 `reference/product-details.json`。本轮实际导入参数位于同一私有目录；未来可通过 `wp eval-file deploy/import-product-details.php /absolute/path/reference/product-details.json` 明确指定数据文件。不要在修改了正式价格/库存后未经审核重跑源数据导入。
+
+验证和未完成项见 `reference/对照完善验证-2026-11-02.md`。测试未提交订单，测试购物车和本轮测试账号已清理；SiteGround动态缓存已清除。
