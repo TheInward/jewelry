@@ -27,3 +27,6 @@ foreach($pages as $slug=>[$title,$content]){
 }
 flush_rewrite_rules();
 WP_CLI::success('Created information pages; preview business policies are explicitly marked.');
+
+// Keep current merchant-approved delivery and return policies on fresh installs.
+require __DIR__.'/update-seleneith-policies.php';

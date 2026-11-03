@@ -11,3 +11,5 @@
 .footer.footer-full .footer-legal a{display:inline-block;margin:0;font-size:inherit;line-height:inherit}
 .footer.footer-full .footer-legal .footer-contact{margin-left:auto}
 @media(max-width:767px){.footer.footer-full .footer-legal{gap:8px 16px}.footer.footer-full .footer-copyright{flex-basis:100%}.footer.footer-full .footer-legal .footer-contact{margin-left:0}}
+
+.information-page table{width:100%;border-collapse:collapse;font-size:13px}.information-page th,.information-page td{border:1px solid #ddd;padding:10px;text-align:left;vertical-align:top}.information-page th{background:#f5f4f1}@media(max-width:767px){.information-page table{display:block;overflow-x:auto;max-width:100%}}

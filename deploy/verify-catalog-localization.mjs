@@ -58,7 +58,9 @@ try {
   assert(checkout.html.includes('name="checkout"'),'Server-rendered WooCommerce checkout form');
   const summary=checkout.html.match(/class="order-total"[\s\S]*?<\/tr>/)?.[0];
   assert(summary?.includes('woocommerce-Price-currencySymbol'),'Checkout has a calculated total');
-  assert(summary.includes(Number(cart.total).toLocaleString('en-US',{minimumFractionDigits:Number(locale(checkout.html).decimals),maximumFractionDigits:Number(locale(checkout.html).decimals)})),'Native checkout total matches bag subtotal for free shipping');
+  const shippingRow=checkout.html.match(/class="woocommerce-shipping-totals shipping"[\s\S]*?<\/tr>/)?.[0]||'';
+  const shippingAmount=Number((shippingRow.match(/<bdi>([\s\S]*?)<\/bdi>/)?.[1]||'').replace(/<[^>]+>|&[^;]+;/g,'').replace(/[^0-9.\-]/g,''));
+  assert(summary.includes(Number(cart.total+shippingAmount).toLocaleString('en-US',{minimumFractionDigits:Number(locale(checkout.html).decimals),maximumFractionDigits:Number(locale(checkout.html).decimals)})),'Native checkout total matches subtotal plus shipping');
   assert(!checkout.html.includes('id="filter-groups"'),'Checkout must not initialize catalog filters');
   console.log('Currency',currency,'product',shown.price,'subtotal',cart.total,'checkout verified');
  }
@@ -76,9 +78,9 @@ try {
  const fields=new URLSearchParams({billing_first_name:'Preview',billing_last_name:'Check',billing_country:'US',billing_state:'NY',billing_postcode:'10001',billing_city:'Test',billing_address_1:'Test address',billing_email:'catalog-check@example.invalid',ship_to_different_address:'0'});
  const review=await shopper.request('?wc-ajax=update_order_review',{method:'POST',body:new URLSearchParams({security:cp.update_order_review_nonce,country:'US',state:'NY',postcode:'10001',city:'Test',address:'Test address',s_country:'US',s_state:'NY',s_postcode:'10001',post_data:fields.toString(),has_full_address:'true'})});
  const fragment=JSON.parse(review.html).fragments['.woocommerce-checkout-review-order-table'];
- assert(fragment.includes('free_shipping'),'Free shipping should be eligible at USD54');
- assert(!fragment.includes('flat_rate'),'Paid shipping must not override eligible free shipping');
- console.log('USD54 free shipping selected; no payment or order submitted.');
+ assert(fragment.includes('flat_rate'),'USD54 must use standard shipping below USD100');
+ assert(!fragment.includes('free_shipping'),'USD54 does not qualify for free shipping');
+ console.log('USD54 standard shipping selected below USD100; no payment or order submitted.');
  const guest=client();const empty=await guest.request(settings.ajax,{method:'POST',body:new URLSearchParams({action:'study_cart',nonce:settings.nonce})});assert.equal(JSON.parse(empty.html).data.count,0,'Other guest isolation');
  console.log('Guest cart isolation verified.');
 } finally {if(key)await api('study_cart',{remove:key});}
