@@ -8,7 +8,8 @@ foreach($rows as $row){
  $id=wc_get_product_id_by_sku('REF-'.$row['id']);if(!$id)continue;
  $options=$row['options'];$variants=$row['variants'];
  $is_variable=count($variants)>1 || (count($options)>0 && $options[0]['name']!=='Title');
- $p=$is_variable?new WC_Product_Variable($id):wc_get_product($id);
+ $original=wc_get_product($id);$p=$is_variable?new WC_Product_Variable($id):$original;
+ if($is_variable&&!$original->is_type('variable')){$p->set_manage_stock(false);$p->set_stock_quantity(null);}
  $p->set_description(wp_kses_post($row['description']));
  $p->update_meta_data('_study_source_created',strtotime($row['created_at']));
  if(!$is_variable){$p->save();$updated++;continue;}
@@ -21,7 +22,12 @@ foreach($rows as $row){
   $v->set_parent_id($id);$v->set_status('publish');$v->set_sku($sku);
   $selected=[];
   foreach($options as $index=>$opt)$selected[sanitize_title($opt['name'])]=(string)($data['options'][$index]??'');
-  $v->set_attributes($selected);$v->set_manage_stock(false);$v->set_stock_status($data['available']?'instock':'outofstock');
+  $v->set_attributes($selected);
+  // Existing SKU inventory belongs to the merchant, not a detail import.
+  if(!$vid){
+   if(isset($data['stock_quantity'])){$v->set_manage_stock(true);$v->set_stock_quantity((int)$data['stock_quantity']);$v->set_backorders('no');$v->set_stock_status($data['stock_quantity']>0?'instock':'outofstock');}
+   else{$v->set_manage_stock(false);$v->set_stock_status($data['available']?'instock':'outofstock');}
+  }
   $price=(float)$data['price']/100;$regular=max($price,(float)($data['compare_at_price']??0)/100);
   $v->set_regular_price(wc_format_decimal($regular,2));$v->set_sale_price($regular>$price?wc_format_decimal($price,2):'');
   $v->update_meta_data('_study_images',[$data['image']]);$v->update_meta_data('_study_source_variant',$data['id']);$v->save();$variation_count++;

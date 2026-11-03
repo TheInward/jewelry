@@ -31,6 +31,7 @@ foreach ($rows as $index=>$row) {
         $product->set_regular_price($row['regular'] ?: $row['price']);
         if ((float)$row['regular']>(float)$row['price']) $product->set_sale_price($row['price']);
         $product->set_stock_status($row['available']?'instock':'outofstock');
+        if(isset($row['stock_quantity'])){$product->set_manage_stock(true);$product->set_stock_quantity((int)$row['stock_quantity']);$product->set_backorders('no');}
         $product->set_menu_order($index); $created++;
     } else $updated++;
     $category_ids = array_values(array_diff($product->get_category_ids(), array_values($terms)));
