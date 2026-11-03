@@ -22,9 +22,11 @@ foreach(get_posts(['post_type'=>['product','product_variation','page','attachmen
  delete_post_meta($post->ID,'_study_source');
 }
 $user=get_user_by('id',$config['admin_id']);if(!$user||!in_array('administrator',$user->roles,true))throw new RuntimeException('Expected administrator missing.');
-$occupied=get_user_by('login','seleneith_admin');if($occupied&&$occupied->ID!==$user->ID)throw new RuntimeException('Target login exists.');
+$target_login=$config['admin_login']??$user->user_login;
+if(!validate_username($target_login))throw new RuntimeException('Invalid administrator login.');
+$occupied=get_user_by('login',$target_login);if($occupied&&$occupied->ID!==$user->ID)throw new RuntimeException('Target login exists.');
 global $wpdb;
-$result=$wpdb->update($wpdb->users,['user_login'=>'seleneith_admin','user_nicename'=>'seleneith-admin','display_name'=>'Seleneith'],['ID'=>$user->ID]);if($result===false)throw new RuntimeException('Could not rename administrator.');
+$result=$wpdb->update($wpdb->users,['user_login'=>$target_login,'user_nicename'=>sanitize_title($target_login),'display_name'=>'Seleneith'],['ID'=>$user->ID]);if($result===false)throw new RuntimeException('Could not rename administrator.');
 update_user_meta($user->ID,'nickname','Seleneith');clean_user_cache($user->ID);
 $old=get_option('stylesheet');$mods=get_option('theme_mods_'.$old);switch_theme('seleneith');if($mods)update_option('theme_mods_seleneith',$mods);
 if($old!=='seleneith')delete_option('theme_mods_'.$old);

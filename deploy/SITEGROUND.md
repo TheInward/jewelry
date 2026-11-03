@@ -15,4 +15,4 @@
 
 部署和数据完整性验证：verify-domain.mjs、verify-brand.mjs、verify-mobile.mjs、verify-shipping-checkout.mjs、verify-editorials.mjs。指定站点可设置 SELENEITH_PREVIEW_URL。账户和邮件测试会产生数据或发送邮件，应使用经授权的测试地址并清理。
 
-目前配送、售后与事务邮件已配置并验收；实际支付、正式库存和完整翻译仍待完善，保留开发提示和 noindex。管理员登录名为 seleneith_admin，密码保留原值，不存入Git。
+目前配送、售后与事务邮件已配置并验收；实际支付、正式库存和完整翻译仍待完善，保留开发提示和 noindex。管理员登录名为 admin；密码由商家指定，不存入Git。
