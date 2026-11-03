@@ -1,8 +1,8 @@
 {
-  "name": "enroute-wordpress-study",
+  "name": "seleneith-wordpress-study",
   "private": true,
   "scripts": {
-    "start": "wp-playground-cli server --port=9400 --blueprint=blueprint.json --mount=./theme:/wordpress/wp-content/themes/enroute-study --mount=./reference:/wordpress/wp-content/reference --mount=./setup:/wordpress/wp-content/study-setup",
+    "start": "wp-playground-cli server --port=9400 --blueprint=blueprint.json --mount=./theme:/wordpress/wp-content/themes/seleneith --mount=./reference:/wordpress/wp-content/reference --mount=./setup:/wordpress/wp-content/study-setup",
     "verify:mobile": "node deploy/verify-mobile.mjs"
   },
   "devDependencies": {

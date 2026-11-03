@@ -2,8 +2,8 @@
 declare(strict_types=1);
 header('Cache-Control: no-store');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
-$settings=require '/srv/enroute-preview/preview-gate-config.php';
-$token=$_COOKIE['enroute_preview']??'';
+$settings=require '/srv/seleneith-preview/preview-gate-config.php';
+$token=$_COOKIE['seleneith_preview']??'';
 $parts=explode('.', $token, 2);
 $valid=count($parts)===2 && ctype_digit($parts[0]) && (int)$parts[0]>time() && (int)$parts[0]<=time()+28800 && hash_equals(hash_hmac('sha256',$parts[0],$settings['secret']),$parts[1]);
 if(($_SERVER['PREVIEW_AUTH_CHECK']??'')==='1'){
@@ -14,7 +14,7 @@ $error='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
     if(password_verify((string)($_POST['password']??''),$settings['password_hash'])){
         $expiry=(string)(time()+28800);
-        setcookie('enroute_preview',$expiry.'.'.hash_hmac('sha256',$expiry,$settings['secret']),['expires'=>(int)$expiry,'path'=>'/jewelry/','secure'=>false,'httponly'=>true,'samesite'=>'Lax']);
+        setcookie('seleneith_preview',$expiry.'.'.hash_hmac('sha256',$expiry,$settings['secret']),['expires'=>(int)$expiry,'path'=>'/jewelry/','secure'=>false,'httponly'=>true,'samesite'=>'Lax']);
         header('Location: /jewelry/',true,303);exit;
     }
     $error='密码不正确，请重试。';

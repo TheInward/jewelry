@@ -4,7 +4,7 @@
 
 ## 包内文件
 
-- `theme/`：安装到目标 WordPress 的 `wp-content/themes/enroute-study/`。
+- `theme/`：安装到目标 WordPress 的 `wp-content/themes/seleneith/`。
 - `reference/necklaces.json`：安装到目标 WordPress 的 `wp-content/reference/necklaces.json`。
 - `setup/import.php`：通过目标 WordPress 的 WP-CLI `eval-file` 手动执行一次。
 
@@ -26,6 +26,6 @@
 
 ## 首次部署与日常更新
 
-`provision-server.sh` 只用于空白的 `/srv/enroute-preview/jewelry` 安装，使用 PHP 8.3、MariaDB、独立 Nginx 8080，安装后启用顾客账户。依赖安装和 WordPress/WooCommerce 发行包需先按脚本列明的路径准备。脚本不会修改已有 80 端口站点。
+`provision-server.sh` 只用于空白的 `/srv/参考站点-preview/jewelry` 安装，使用 PHP 8.3、MariaDB、独立 Nginx 8080，安装后启用顾客账户。依赖安装和 WordPress/WooCommerce 发行包需先按脚本列明的路径准备。脚本不会修改已有 80 端口站点。
 
-已有服务器更新时，只同步 `theme/` 至 `wp-content/themes/enroute-study/`，先备份主题；不要重新运行首次安装或 `bootstrap-server.php`，不要覆盖 `wp-config.php`、数据库和上传目录。`migrate-port8080.php`、`fix-config.php`、预览验证脚本是历史迁移工具，正常更新不需要执行。
+已有服务器更新时，只同步 `theme/` 至 `wp-content/themes/seleneith/`，先备份主题；不要重新运行首次安装或 `bootstrap-server.php`，不要覆盖 `wp-config.php`、数据库和上传目录。`migrate-port8080.php`、`fix-config.php`、预览验证脚本是历史迁移工具，正常更新不需要执行。

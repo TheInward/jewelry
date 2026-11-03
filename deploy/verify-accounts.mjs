@@ -1,5 +1,5 @@
 import {randomBytes} from 'node:crypto';
-const base=process.env.ENROUTE_PREVIEW_URL||'https://seleneith.com/';
+const base=process.env.SELENEITH_PREVIEW_URL||'https://seleneith.com/';
 const jar=new Map();
 async function request(path,options={},depth=0){
  const response=await fetch(new URL(path,base),{...options,headers:{connection:'close',cookie:[...jar].map(([k,v])=>k+'='+v).join('; '),...options.headers},redirect:'manual',signal:AbortSignal.timeout(15000)});

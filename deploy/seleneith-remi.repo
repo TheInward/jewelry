@@ -1,5 +1,5 @@
-[enroute-remi-safe]
-name=Remi PHP parallel packages for Enroute preview
+[seleneith-remi-safe]
+name=Remi PHP parallel packages for Seleneith preview
 baseurl=https://mirrors.aliyun.com/remi/enterprise/8/safe/$basearch/
 enabled=1
 gpgcheck=1

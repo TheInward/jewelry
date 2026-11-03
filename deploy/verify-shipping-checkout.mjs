@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-const base=process.env.ENROUTE_PREVIEW_URL||'https://seleneith.com/';const jar=new Map();
+const base=process.env.SELENEITH_PREVIEW_URL||'https://seleneith.com/';const jar=new Map();
 async function request(path,options={},depth=0){const r=await fetch(new URL(path,base),{...options,headers:{connection:'close',cookie:[...jar].map(([k,v])=>k+'='+v).join('; '),...options.headers},redirect:'manual',signal:AbortSignal.timeout(45000)});for(const c of r.headers.getSetCookie()){const pair=c.split(';')[0],i=pair.indexOf('=');jar.set(pair.slice(0,i),pair.slice(i+1))}if([301,302,303].includes(r.status)&&depth<6)return request(r.headers.get('location'),{},depth+1);assert.equal(r.status,200);return r.text()}
 const home=await request('');const cfg=JSON.parse(home.match(/var studyConfig = (.*?);/s)[1]);
 async function cart(values={}){const p=JSON.parse(await request(cfg.ajax,{method:'POST',body:new URLSearchParams({action:'study_cart',nonce:cfg.nonce,...values})}));assert(p.success,JSON.stringify(p));return p.data}

@@ -1,6 +1,6 @@
 <?php
 if(PHP_SAPI!=='cli')exit;
-require '/srv/enroute-preview/jewelry/wp-load.php';
+require '/srv/seleneith-preview/jewelry/wp-load.php';
 require_once ABSPATH.'wp-admin/includes/user.php';
 $emails=['codex-account-check-1793509260330@example.invalid','codex-account-check-1793509337973@example.invalid','codex-account-check-1793509373374@example.invalid','codex-account-check-1793509464100@example.invalid'];
 $count=0;

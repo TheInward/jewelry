@@ -1,7 +1,9 @@
 """Refresh short collection and facet labels from the public reference menus."""
-import concurrent.futures, html, json, pathlib, re, subprocess
+import os, concurrent.futures, html, json, pathlib, re, subprocess
 from html.parser import HTMLParser
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+BASE_URL = os.environ.get('CATALOG_SOURCE_URL', '').rstrip('/')
+if not BASE_URL: raise RuntimeError('Set CATALOG_SOURCE_URL to an authorized catalog endpoint.')
 CACHE = ROOT / '.runtime/catalog-source'
 manifest = json.loads((ROOT/'reference/collections.json').read_text())
 languages = ['en','pl','es','fr','de','nl','it','sv','ja','ko','pt-pt','el','cs','hu']
@@ -23,7 +25,7 @@ def fetch(lang):
     path = CACHE/f'menu-{lang}.html'
     if not path.exists():
         prefix = '' if lang == 'en' else '/'+{'pt-pt':'pt'}.get(lang,lang)
-        result = subprocess.run(['curl','-fLsS','--retry','2','--max-time','40',f'https://enroutejewelry.com{prefix}/collections/necklaces'],capture_output=True)
+        result = subprocess.run(['curl','-fLsS','--retry','2','--max-time','40',f'{BASE_URL}{prefix}/collections/necklaces'],capture_output=True)
         if result.returncode: return lang, {}, {}
         path.write_bytes(result.stdout)
     source = path.read_text(); parser = Menus(); parser.feed(source)

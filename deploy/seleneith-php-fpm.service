@@ -1,0 +1,12 @@
+[Unit]
+Description=Seleneith preview isolated PHP 8.3 FPM
+After=network.target mariadb.service
+
+[Service]
+Type=simple
+ExecStart=/opt/remi/php83/root/usr/sbin/php-fpm --nodaemonize --fpm-config /srv/seleneith-preview/php-fpm.conf
+Restart=on-failure
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

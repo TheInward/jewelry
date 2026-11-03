@@ -7,7 +7,7 @@ $title = study_collections()[$slug] ?? single_term_title('', false);
 ?>
 <main data-collection="<?php echo esc_attr($slug); ?>">
 <?php if ($slug === 'necklaces'): ?>
-<picture class="hero"><source media="(max-width:600px)" srcset="https://cdn.shopify.com/s/files/1/1782/4093/files/necklace_mb.jpg?v=1763728439&width=1000"><img src="https://cdn.shopify.com/s/files/1/1782/4093/files/necklace_70d5fca5-efc4-456f-8a8f-a36d416bf4e4.jpg?v=1763725677&width=2200" alt="<?php echo esc_attr(study_t($title)); ?>"></picture>
+<picture class="hero"><source media="(max-width:600px)" srcset="https://seleneith.com/wp-content/uploads/seleneith-media/c0fb48db1da58087135554d8.jpg"><img src="https://seleneith.com/wp-content/uploads/seleneith-media/90849fb1fd5a2871ea714806.jpg" alt="<?php echo esc_attr(study_t($title)); ?>"></picture>
 <?php endif; ?>
 <h1 class="collection-title"><?php echo esc_html(study_t($title)); ?></h1>
 <section class="catalog"><div class="catalog-toolbar"><div class="sort-control"><span class="mobile-sort-caption"><?php echo esc_html(study_t('Sort by')); ?> ⌄</span><select id="sort" aria-label="<?php echo esc_attr(study_t('Sort by')); ?>">

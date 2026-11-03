@@ -1,7 +1,7 @@
 <?php
 if(PHP_SAPI!=='cli')exit;
 $_SERVER['HTTP_HOST']='39.106.108.70:8080';$_SERVER['REQUEST_URI']='/jewelry/';
-require '/srv/enroute-preview/jewelry/wp-load.php';
+require '/srv/seleneith-preview/jewelry/wp-load.php';
 update_option('woocommerce_enable_myaccount_registration','yes');
 update_option('woocommerce_registration_generate_username','yes');
 update_option('woocommerce_registration_generate_password','no');

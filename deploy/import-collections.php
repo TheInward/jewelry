@@ -39,7 +39,6 @@ foreach ($rows as $index=>$row) {
     $product->update_meta_data('_study_images',$row['images']);
     $product->update_meta_data('_study_tags',$row['tags']);
     $product->update_meta_data('_study_translations',$row['translations']);
-    $product->update_meta_data('_study_source','https://enroutejewelry.com/products/'.$row['handle']);
     $product->save();
 }
 wc_delete_product_transients(); flush_rewrite_rules();

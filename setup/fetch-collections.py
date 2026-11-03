@@ -3,9 +3,11 @@
 Raw responses stay in ignored .runtime. Only titles, prices, image references,
 availability and collection membership are retained in the reproducible seed.
 """
-import concurrent.futures, json, pathlib, subprocess, time
+import os, concurrent.futures, json, pathlib, subprocess, time
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+BASE_URL = os.environ.get('CATALOG_SOURCE_URL', '').rstrip('/')
+if not BASE_URL: raise RuntimeError('Set CATALOG_SOURCE_URL to an authorized catalog endpoint.')
 CACHE = ROOT / '.runtime/catalog-source'
 CACHE.mkdir(parents=True, exist_ok=True)
 COLLECTIONS = json.loads((ROOT / 'reference/collections.json').read_text())
@@ -17,7 +19,7 @@ def fetch(slug, lang='en'):
         cached = CACHE / f'{lang}-{slug}-{page}.json'
         if not cached.exists():
             prefix = '' if lang == 'en' else '/'+{'pt-pt':'pt'}.get(lang, lang)
-            url = f'https://enroutejewelry.com{prefix}/collections/{slug}/products.json?limit=100&page={page}'
+            url = f'{BASE_URL}{prefix}/collections/{slug}/products.json?limit=100&page={page}'
             for attempt in range(4):
                 response = subprocess.run(['curl', '-fLsS', '--max-time', '45', url], capture_output=True)
                 try:

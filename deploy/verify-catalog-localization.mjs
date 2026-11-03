@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-const base = process.env.ENROUTE_PREVIEW_URL || 'https://seleneith.com/';
+const base = process.env.SELENEITH_PREVIEW_URL || 'https://seleneith.com/';
 function client() {
  const jar=new Map();
  async function request(path,options={},depth=0) {

@@ -3,8 +3,8 @@ const request=(url,options={})=>{
  const target=new URL(url);
  const headers=new Headers(options.headers);
  let destination=url;
- if(process.env.ENROUTE_VERIFY_ORIGIN && target.port==='8080'){
-  destination=new URL(target.pathname+target.search,process.env.ENROUTE_VERIFY_ORIGIN).href;
+ if(process.env.SELENEITH_VERIFY_ORIGIN && target.port==='8080'){
+  destination=new URL(target.pathname+target.search,process.env.SELENEITH_VERIFY_ORIGIN).href;
   headers.set('Host',target.host);
   const body=options.body?.toString();
   if(body){headers.set('Content-Type','application/x-www-form-urlencoded');headers.set('Content-Length',Buffer.byteLength(body).toString());}
@@ -19,7 +19,7 @@ const request=(url,options={})=>{
  }
  return fetch(destination,{...options,headers,signal:AbortSignal.timeout(15000)});
 };
-const access={preview_url:process.env.ENROUTE_PREVIEW_URL||'http://39.106.108.70:8080/jewelry/'};
+const access={preview_url:process.env.SELENEITH_PREVIEW_URL||'http://39.106.108.70:8080/jewelry/'};
 const previewCookie='';
 const home=await request(access.preview_url);
 const html=await home.text();

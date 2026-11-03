@@ -6,7 +6,7 @@
 </footer>
 <dialog class="signup-dialog" id="signup-dialog" aria-labelledby="signup-title">
   <div class="signup-modal">
-    <img class="signup-photo" src="https://cdn.shopify.com/s/files/1/1782/4093/files/img_v3_0216v_18134370-6dc3-4191-99de-e26f6bd4ddeg.jpg?v=1793359637&amp;width=720" alt="" loading="lazy">
+    <img class="signup-photo" src="https://seleneith.com/wp-content/uploads/seleneith-media/35464675ba91cc603dab7bf6.jpg" alt="" loading="lazy">
     <div class="signup-content">
       <button class="signup-close" type="button" id="signup-close" aria-label="<?php echo esc_attr(study_t('Close')); ?>">×</button>
       <div class="signup-form-panel" id="signup-form-panel">

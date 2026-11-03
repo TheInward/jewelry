@@ -1,6 +1,6 @@
 <?php
 if(PHP_SAPI!=='cli')exit;
-$base='/srv/enroute-preview';
+$base='/srv/seleneith-preview';
 $path=$base.'/jewelry/wp-config.php';
 $source=file_get_contents($path);
 $old="'http://39.106.108.70/jewelry'";
@@ -11,11 +11,11 @@ copy($path,$base.'/backups/wp-config.before-port8080.php');chmod($base.'/backups
 file_put_contents($path,$source);
 $config='/etc/nginx/conf.d/clipflow.conf';
 $nginx=file_get_contents($config);
-$nginx=str_replace("    include /etc/nginx/enroute-public-locations.conf;\n",'',$nginx,$count);
+$nginx=str_replace("    include /etc/nginx/seleneith-public-locations.conf;\n",'',$nginx,$count);
 if($count!==1)throw new RuntimeException('Unexpected Clipflow config; migration stopped.');
 copy($config,$base.'/clipflow.before-port8080.conf');
 file_put_contents($config,$nginx);
-$accessPath='/root/enroute-preview-access.json';
+$accessPath='/root/seleneith-preview-access.json';
 $access=json_decode(file_get_contents($accessPath),true,512,JSON_THROW_ON_ERROR);
 $access['preview_url']='http://39.106.108.70:8080/jewelry/';
 file_put_contents($accessPath,json_encode($access,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
