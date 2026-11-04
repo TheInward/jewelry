@@ -6,7 +6,7 @@ fs.mkdirSync('.runtime/mobile-review',{recursive:true});
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const errors=[];
 try{
- for(const width of [360,390,430,767]){
+ for(const width of (process.env.VERIFY_DESKTOP_ONLY?[]:[360,390,430,767])){
   const context=await browser.newContext({viewport:{width,height:844},isMobile:true,hasTouch:true});const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   const visit=path=>page.goto(new URL(path,base).href,{waitUntil:'load',timeout:60000});
   const overflow=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Overflow at '+width+' '+page.url());
@@ -32,5 +32,5 @@ try{
   await page.locator('.reset_variations').click();await page.waitForFunction(()=>!document.querySelector('.summary>p.price').classList.contains('mobile-has-variation-price'));assert.equal(await page.locator('.mobile-selected-price').isVisible(),false);
   console.log('Mobile',width,'header/menu/signup/two-column catalog/filter/variant-price/overflow passed');await context.close();
  }
- const desktop=await browser.newPage({viewport:{width:1440,height:1000}});await desktop.goto(base,{waitUntil:'load'});assert.equal(await desktop.locator('.mobile-category-section').isVisible(),false);assert.equal(await desktop.locator('.mobile-menu-head').isVisible(),false);assert(await desktop.locator('.home-categories').isVisible());await desktop.goto(new URL('product/waterdrop-necklace/',base).href,{waitUntil:'load'});assert(await desktop.locator('select[name="attribute_color"]').isVisible());assert.equal(await desktop.locator('.mobile-variation-options').first().isVisible(),false);assert.equal(errors.length,0,errors.join('\n'));console.log('Desktop controls retained; no page JavaScript errors. No email, order or payment submitted.');
+ const desktop=await browser.newPage({viewport:{width:1440,height:1000}});desktop.on('pageerror',e=>errors.push(e.message));await desktop.goto(base,{waitUntil:'load',timeout:60000});assert.equal(await desktop.locator('.mobile-category-section').isVisible(),false);assert.equal(await desktop.locator('.mobile-menu-head').isVisible(),false);assert(await desktop.locator('.home-categories').isVisible());await desktop.goto(new URL('product/waterdrop-necklace/',base).href,{waitUntil:'load',timeout:60000});assert(await desktop.locator('select[name="attribute_color"]').isVisible());assert.equal(await desktop.locator('.mobile-variation-options').first().isVisible(),false);assert.equal(errors.length,0,errors.join('\n'));console.log('Desktop controls retained; no page JavaScript errors. No email, order or payment submitted.');
 }finally{await browser.close()}

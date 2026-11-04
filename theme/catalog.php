@@ -22,7 +22,7 @@ function study_product_tags($p) {
     if(in_array('celebrity',$tags,true)||in_array('celebrity pick',$tags,true))$tags[]='highlight__celeb-pick';
     return array_values(array_unique($tags));
 }
-function study_catalog_data($scope = null, $ids = null) {
+function study_catalog_data($scope = null, $ids = null, $context = 'catalog') {
     $args = ['post_type'=>'product', 'posts_per_page'=>-1, 'orderby'=>['menu_order'=>'ASC','ID'=>'ASC'], 'post_status'=>'publish'];
     if ($scope !== null) $args['tax_query'] = [['taxonomy'=>'product_cat','field'=>'slug','terms'=>$scope,'include_children'=>false]];
     if ($ids !== null) $args['post__in'] = $ids ?: [0];
@@ -30,24 +30,55 @@ function study_catalog_data($scope = null, $ids = null) {
     $out = [];
     foreach ($query->posts as $post) {
         $p = wc_get_product($post->ID);
-        if (!$p || !$p->is_visible()) continue;
+        if (!$p || post_password_required($post) || ($context === 'search' ? !study_product_searchable($p) : !$p->is_visible())) continue;
         $out[] = ['id'=>$p->get_id(), 'source_id'=>(int)preg_replace('/^REF-/', '', $p->get_sku()), 'title'=>wp_specialchars_decode($p->get_name(), ENT_QUOTES), 'url'=>get_permalink($p->get_id()), 'price'=>(float)$p->get_price(), 'regular'=>(float)($p->is_type('variable')?$p->get_variation_regular_price('min',false):$p->get_regular_price()), 'images'=>$p->get_meta('_study_images')?:[], 'tags'=>study_product_tags($p),'colors'=>study_product_colors($p),'type'=>$p->get_type(),'created'=>(int)($p->get_meta('_study_source_created')?:($p->get_date_created()?$p->get_date_created()->getTimestamp():0)),'sales'=>(int)$p->get_total_sales(), 'available'=>$p->is_in_stock()];
     }
     return $out;
 }
 add_action('wp_ajax_study_products', 'study_products_endpoint');
 add_action('wp_ajax_nopriv_study_products', 'study_products_endpoint');
+function study_product_searchable($product){
+    return $product->get_status()==='publish' && in_array($product->get_catalog_visibility(),['visible','search'],true)
+        && ($product->is_in_stock() || get_option('woocommerce_hide_out_of_stock_items')!=='yes');
+}
+function study_search_product_ids($raw){
+    $search=mb_strtolower(trim(mb_substr(sanitize_text_field($raw),0,100)));
+    if(mb_strlen($search)<2)return [];
+    // Read only titles and their translations; hydrate prices/variations for the
+    // returned page, rather than every product on each search keystroke.
+    global $wpdb;
+    $rows=$wpdb->get_results($wpdb->prepare("SELECT p.ID,p.post_title,m.meta_value FROM {$wpdb->posts} p LEFT JOIN {$wpdb->postmeta} m ON m.post_id=p.ID AND m.meta_key=%s WHERE p.post_type='product' AND p.post_status='publish' AND p.post_password='' ORDER BY p.menu_order,p.ID",'_study_translations'));
+    $ids=[];
+    foreach($rows as $row){
+        $translations=maybe_unserialize($row->meta_value??'');
+        $title=is_array($translations)?($translations[study_language()]??$row->post_title):$row->post_title;
+        $title=wp_specialchars_decode($title,ENT_QUOTES);
+        if(mb_strpos(mb_strtolower($title),$search)===false)continue;
+        $product=wc_get_product($row->ID);
+        if($product&&study_product_searchable($product))$ids[]=(int)$row->ID;
+    }
+    return array_values(array_unique($ids));
+}
 function study_products_endpoint() {
     check_ajax_referer('study-cart','nonce');
-    if (isset($_POST['ids'])) {
-        $ids = array_slice(array_filter(array_map('absint', explode(',', sanitize_text_field(wp_unslash($_POST['ids']))))), 0, 100);
-        wp_send_json_success(study_catalog_data(null, $ids));
-    }
-    $search = mb_strtolower(mb_substr(sanitize_text_field(wp_unslash($_POST['search'] ?? '')), 0, 100));
-    if (mb_strlen($search) < 2) wp_send_json_success([]);
-    $rows = array_filter(study_catalog_data(), function($p) use ($search) { return mb_strpos(mb_strtolower($p['title']), $search) !== false; });
-    wp_send_json_success(array_slice(array_values($rows), 0, 12));
+    try{
+        if (isset($_POST['ids'])) {
+            $ids=study_product_ids_input(study_post_text('ids',1100));
+            wp_send_json_success(study_catalog_data(null,$ids));
+        }
+        $ids=study_search_product_ids(study_post_text('search',400));
+        wp_send_json_success(study_catalog_data(null,array_slice($ids,0,12),'search'));
+    }catch(InvalidArgumentException $e){wp_send_json_error($e->getMessage(),400);}
 }
+// The full search page and drawer must use the same localized title matching.
+add_action('pre_get_posts',function($query){
+    if(is_admin()||!$query->is_main_query()||!$query->is_search())return;
+    $search=$query->get('s');
+    $ids=study_search_product_ids(is_string($search)?$search:'');
+    $query->set('post_type','product');$query->set('post__in',$ids?:[0]);
+    $query->set('orderby','post__in');$query->set('study_product_search',true);
+},20);
+add_filter('posts_search',function($sql,$query){return $query->get('study_product_search')?'':$sql;},20,2);
 function study_navigation() {
     return [
         'BestSellers'=>['bestseller',[]], 'New In'=>['new-arrival',[]],

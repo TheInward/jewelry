@@ -15,7 +15,7 @@ document.querySelectorAll('.market-dropdown').forEach(menu=>menu.addEventListene
 if(!$('header .tools'))return;
 let wishlistReady=Promise.resolve();
 let products=JSON.parse($('#catalog-data')?.textContent||'[]'),limit=24,saved=[];
-try{const stored=JSON.parse(localStorage.getItem('study-wishlist')||'[]');if(Array.isArray(stored))saved=stored.filter(Number.isInteger).slice(0,100)}catch{}
+try{const stored=JSON.parse(localStorage.getItem('study-wishlist')||'[]');if(Array.isArray(stored))saved=stored.filter(id=>Number.isSafeInteger(id)&&id>0).slice(0,100)}catch{}
 function syncWishlist(){document.querySelectorAll('[data-wish]').forEach(b=>{const selected=saved.includes(Number(b.dataset.wish));b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected))})}
 syncWishlist();
 const image=(p,n=0)=>{const src=p.images[n]||p.images[0]||'';return src?src+(src.includes('?')?'&':'?')+'width=650':''};
@@ -60,12 +60,13 @@ if($('#product-grid')&&$('#filter-groups')){
  render();
 }
 function toast(message){$('.toast').textContent=message;$('.toast').classList.add('visible');setTimeout(()=>$('.toast').classList.remove('visible'),2500)}
-let previousFocus,searchTimer,searchVersion=0;
+let previousFocus,searchTimer,searchVersion=0,drawerVersion=0;
 function openDrawer(title,body){
+ drawerVersion++;searchVersion++;clearTimeout(searchTimer);
  if(!$('#overlay').classList.contains('open'))previousFocus=document.activeElement;
  $('#drawer-title').textContent=t(title);$('#drawer-body').innerHTML=body;$('#overlay').classList.add('open');document.body.style.overflow='hidden';$('#close-drawer').focus();
 }
-function close(){searchVersion++;clearTimeout(searchTimer);$('#overlay').classList.remove('open');document.body.style.overflow='';previousFocus?.focus()}
+function close(){drawerVersion++;searchVersion++;clearTimeout(searchTimer);$('#overlay').classList.remove('open');document.body.style.overflow='';previousFocus?.focus()}
 $('#close-drawer').onclick=close;
 $('#overlay').onclick=e=>{if(e.target===$('#overlay'))close()};
 document.addEventListener('keydown',e=>{
@@ -82,6 +83,23 @@ async function api(action,values={}){
  if(!response.ok||!payload.success)throw Error(typeof payload.data==='string'?payload.data:'Request failed. Please refresh and retry.');
  return payload.data;
 }
+let wishlistQueue=Promise.resolve();
+function updateWishlist(id,toggle=false){
+ const pending=wishlistQueue.then(async()=>{
+  await wishlistReady;
+  const remove=toggle&&saved.includes(id);
+  let next=remove?saved.filter(value=>value!==id):[...new Set([...saved,id])].slice(-100);
+  if(studyConfig.loggedIn)next=await api('study_wishlist',remove?{remove:id}:{add:id});
+  else localStorage.setItem('study-wishlist',JSON.stringify(next));
+  saved=next;syncWishlist();return saved.includes(id);
+ });
+ wishlistQueue=pending.catch(()=>{});return pending;
+}
+async function showCart(values={}){
+ const version=++drawerVersion;
+ const data=await cart(values);
+ if(version===drawerVersion)cartView(data);
+}
 let cartQueue=Promise.resolve();
 function cart(values={}){
  const pending=cartQueue.then(()=>api('study_cart',values)).then(data=>{if(data.currency!==studyLocale.currency)throw Error('Currency changed. Please refresh this page.');$('#cart-count').textContent=data.count;$('#cart-count').hidden=data.count===0;return data});
@@ -97,25 +115,34 @@ document.addEventListener('click',async e=>{
  const button=e.target.closest('button');if(!button)return;
  try{
   if(button.dataset.wish||button.dataset.open==='wishlist'||button.dataset.move)await wishlistReady;
-  if(button.dataset.move){const id=Number(button.dataset.move);saved=[...new Set([...saved,id])];if(studyConfig.loggedIn)saved=await api('study_wishlist',{add:id});else try{localStorage.setItem('study-wishlist',JSON.stringify(saved))}catch{};syncWishlist();cartView(await cart({remove:button.dataset.key}));return;}
+  if(button.dataset.move){
+   button.disabled=true;const version=++drawerVersion;
+   try{
+    await updateWishlist(Number(button.dataset.move));
+    const data=await cart({remove:button.dataset.key});
+    if(version===drawerVersion)cartView(data);
+   }finally{button.disabled=false}
+   return;
+  }
   if(button.dataset.add||button.dataset.remove||button.hasAttribute('data-qty')){
    button.disabled=true;
    try{
     let values=button.dataset.add?{add:button.dataset.add}:button.dataset.remove?{remove:button.dataset.remove}:{quantity:button.dataset.qty,key:button.dataset.key};
     // Disable all quantity controls until the response replaces their stale values.
     if(!button.dataset.add)$('#drawer-body').querySelectorAll('button').forEach(node=>node.disabled=true);
-    cartView(await cart(values));
+    await showCart(values);
    }finally{button.disabled=false;$('#drawer-body').querySelectorAll('button').forEach(node=>node.disabled=false)}
   }
   if(button.dataset.wish){
-   const id=Number(button.dataset.wish);saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id].slice(-100);
-   if(studyConfig.loggedIn){saved=await api('study_wishlist',saved.includes(id)?{add:id}:{remove:id})}else{try{localStorage.setItem('study-wishlist',JSON.stringify(saved))}catch{}}
-   syncWishlist();toast(t(saved.includes(id)?'Saved to your wishlist':'Removed from wishlist'));
+   const selected=await updateWishlist(Number(button.dataset.wish),true);
+   toast(t(selected?'Saved to your wishlist':'Removed from wishlist'));
   }
-  if(button.dataset.open==='cart')cartView(await cart());
+  if(button.dataset.open==='cart')await showCart();
   if(button.dataset.open==='wishlist'){
+   const version=++drawerVersion;
+   await wishlistQueue;
    const rows=await api('study_products',{ids:saved.join(',')});
-   openDrawer('Your Wishlist',results(rows)||'<p>'+esc(t('Your wishlist is empty.'))+'</p>');
+   if(version===drawerVersion)openDrawer('Your Wishlist',results(rows)||'<p>'+esc(t('Your wishlist is empty.'))+'</p>');
   }
   if(button.dataset.open==='search'){
    openDrawer('Search','<input class="searchbox" placeholder="'+esc(t('Search jewelry'))+'" aria-label="'+esc(t('Search jewelry'))+'"><div id="search-results" aria-live="polite"></div>');

@@ -7,13 +7,17 @@ add_action('wp_enqueue_scripts',function(){
 });
 add_filter('woocommerce_registration_errors',function($errors,$username,$email){
  if(!isset($_POST['register']))return $errors;
- foreach(['first_name'=>'First name','last_name'=>'Last name'] as $key=>$label){if(empty($_POST[$key]))$errors->add($key,$label.' is required.');}
- if(isset($_POST['password'])&&strlen(wp_unslash($_POST['password']))<8)$errors->add('password_length','Please use a password with at least 8 characters.');
- if(($_POST['password']??'')!==($_POST['password_confirmation']??''))$errors->add('password_mismatch','Passwords do not match.');
- if(get_privacy_policy_url()&&empty($_POST['agree_privacy']))$errors->add('privacy_consent','Please agree to the Privacy Policy.');
+ foreach(['first_name'=>'First name','last_name'=>'Last name'] as $key=>$label){
+  $raw=$_POST[$key]??'';
+  if(!is_string($raw)||strlen($raw)>200||trim(sanitize_text_field(wp_unslash($raw)))==='')$errors->add($key,$label.' is required (maximum 200 characters).');
+ }
+ $password=$_POST['password']??null;$confirmation=$_POST['password_confirmation']??null;
+ if(!is_string($password)||strlen(wp_unslash($password))<8)$errors->add('password_length','Please use a password with at least 8 characters.');
+ if(!is_string($confirmation)||$password!==$confirmation)$errors->add('password_mismatch','Passwords do not match.');
+ if(get_privacy_policy_url()&&($_POST['agree_privacy']??'')!=='1')$errors->add('privacy_consent','Please agree to the Privacy Policy.');
  return $errors;
 },10,3);
 add_action('woocommerce_created_customer',function($id){
- foreach(['first_name','last_name'] as $key){if(isset($_POST[$key])){$value=sanitize_text_field(wp_unslash($_POST[$key]));update_user_meta($id,$key,$value);update_user_meta($id,'billing_'.$key,$value);}}
+ foreach(['first_name','last_name'] as $key){if(isset($_POST[$key])&&is_string($_POST[$key])){$value=sanitize_text_field(wp_unslash($_POST[$key]));update_user_meta($id,$key,$value);update_user_meta($id,'billing_'.$key,$value);}}
 });
 add_filter('woocommerce_account_menu_items',function($items){unset($items['downloads']);return $items;});

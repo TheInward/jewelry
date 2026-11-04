@@ -7,7 +7,8 @@ add_action('wp_ajax_nopriv_study_signup', 'study_signup');
 function study_signup() {
     check_ajax_referer('study-cart', 'nonce');
     if (!class_exists('WC_Coupon')) wp_send_json_error(['message'=>'Coupons are unavailable.'], 503);
-    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    try{$raw=study_post_text('email',254);}catch(InvalidArgumentException $e){wp_send_json_error(['message'=>'Please enter a valid email address.'],400);}
+    $email = strtolower(trim($raw));
     if (!is_email($email)) wp_send_json_error(['message'=>'Please enter a valid email address.'], 400);
 
     $hash = hash_hmac('sha256', strtolower($email), wp_salt('auth'));
@@ -20,7 +21,7 @@ function study_signup() {
         'meta_key'=>'_study_signup_hash','meta_value'=>$hash,'fields'=>'ids']);
     if ($existing) {
         $coupon = new WC_Coupon($existing[0]);
-        if ($coupon->get_date_expires() && $coupon->get_date_expires()->getTimestamp() < time()) {
+        if (($coupon->get_date_expires() && $coupon->get_date_expires()->getTimestamp() < time()) || ($coupon->get_usage_limit() && $coupon->get_usage_count() >= $coupon->get_usage_limit())) {
             wp_send_json_error(['message'=>'This email has already received a signup code.'], 409);
         }
         wp_send_json_success(['code'=>$coupon->get_code(),'emailed'=>false]);

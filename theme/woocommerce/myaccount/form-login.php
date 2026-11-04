@@ -17,7 +17,7 @@ $register=isset($_GET['create_account'])&&get_option('woocommerce_enable_myaccou
    <button type="submit" class="primary" name="login" value="Log in"><?php echo esc_html(study_t("Log in")); ?></button>
    <?php do_action('woocommerce_login_form_end'); ?>
   </form>
-  <p class="account-switch"><a href="<?php echo esc_url(add_query_arg('create_account','1',wc_get_page_permalink('myaccount'))); ?>" data-account-switch="register"><?php echo esc_html(study_t("Create account")); ?></a></p>
+  <?php if(get_option('woocommerce_enable_myaccount_registration')==='yes'): ?><p class="account-switch"><a href="<?php echo esc_url(add_query_arg('create_account','1',wc_get_page_permalink('myaccount'))); ?>" data-account-switch="register"><?php echo esc_html(study_t("Create account")); ?></a></p><?php endif; ?>
  </section>
  <?php if(get_option('woocommerce_enable_myaccount_registration')==='yes'): ?>
  <section data-account-panel="register" <?php if(!$register)echo 'hidden'; ?>>

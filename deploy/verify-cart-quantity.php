@@ -9,8 +9,10 @@ $cart=new class($product){
  function get_cart_item_quantities(){return [$this->product->get_stock_managed_by_id()=>2+$this->other];}
 };
 function expect_quantity($cart,$key,$raw,$expected){
- try{$actual=study_cart_quantity($cart,$key,$raw);if($expected===false)throw new LogicException('Expected rejection: '.json_encode($raw));if($actual!==$expected)throw new LogicException('Wrong validated quantity');}
- catch(LogicException $e){throw $e;}catch(Exception $e){if($expected!==false)throw $e;}
+ try{$actual=study_cart_quantity($cart,$key,$raw);}
+ catch(InvalidArgumentException $e){if($expected===false)return;throw $e;}
+ if($expected===false)throw new LogicException('Expected rejection: '.json_encode($raw));
+ if($actual!==$expected)throw new LogicException('Wrong validated quantity');
 }
 expect_quantity($cart,'test','0',0);expect_quantity($cart,'test','5',5);
 foreach(['-2','1.5','not-a-number',[], '6'] as $value)expect_quantity($cart,'test',$value,false);

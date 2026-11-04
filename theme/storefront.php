@@ -67,12 +67,19 @@ add_action('woocommerce_single_product_summary',function(){
 },35);
 add_action('wp_ajax_study_wishlist',function(){
  check_ajax_referer('study-cart','nonce');
+ try{
+  $actions=array_intersect(['merge','add','remove'],array_keys($_POST));
+  if(count($actions)>1)throw new InvalidArgumentException('Please submit one wishlist change at a time.');
+  $action=$actions?reset($actions):'';
+  $input=$action?study_product_ids_input(study_post_text($action,1100)):[];
+  if(in_array($action,['add','remove'],true)&&count($input)!==1)throw new InvalidArgumentException('Please choose one product.');
+ }catch(InvalidArgumentException $e){wp_send_json_error($e->getMessage(),400);}
  $ids=array_values(array_filter(array_map('absint',(array)get_user_meta(get_current_user_id(),'_study_wishlist',true))));
- if(isset($_POST['merge']))$ids=array_merge($ids,array_map('absint',explode(',',sanitize_text_field(wp_unslash($_POST['merge'])))));
- if(isset($_POST['add']))$ids[]=absint($_POST['add']);
- if(isset($_POST['remove']))$ids=array_diff($ids,[absint($_POST['remove'])]);
+ if($action==='merge'||$action==='add')$ids=array_merge($ids,$input);
+ if($action==='remove')$ids=array_diff($ids,$input);
  $ids=array_slice(array_values(array_unique(array_filter($ids,function($id){return get_post_type($id)==='product'&&get_post_status($id)==='publish';}))),-100);
- update_user_meta(get_current_user_id(),'_study_wishlist',$ids);wp_send_json_success($ids);
+ if($action)update_user_meta(get_current_user_id(),'_study_wishlist',$ids);
+ wp_send_json_success($ids);
 });
 add_filter('woocommerce_available_variation',function($data,$product,$variation){$images=$variation->get_meta('_study_images');if($images)$data['study_image']=$images[0];return $data;},10,3);
 add_action('woocommerce_after_add_to_cart_button',function(){global $product;?><button type="submit" name="add-to-cart" value="<?php echo (int)$product->get_id(); ?>" class="study-buy-now" data-buy-now><?php echo esc_html(study_t('Buy Now')); ?></button><?php });

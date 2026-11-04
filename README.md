@@ -16,6 +16,8 @@
 
 ## 验证
 
+- `node deploy/verify-audit-live.mjs`：接口边界、搜索与分页；只使用临时访客购物车，不创建订单或发信
+- `node deploy/verify-storefront-state.mjs`：模拟收藏失败和并发、弹层延迟响应，不写真实账户
 - `node deploy/verify-domain.mjs`
 - `node deploy/verify-brand.mjs`
 - `npm run verify:mobile`
