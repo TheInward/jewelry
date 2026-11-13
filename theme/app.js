@@ -22,11 +22,10 @@ const image=(p,n=0)=>{const src=p.images[n]||p.images[0]||'';return src?src+(src
 function colorLinks(p){const colors=p.colors;if(!colors?.values?.length)return '';const palette={gold:'#ecd78d',silver:'#d2d3d5','rose gold':'#d6aaa0',black:'#222',white:'#f5f5f5',green:'#629276',blue:'#638bba','marine blue':'#79b8ca'};return '<div class="card-colors">'+colors.values.map(color=>{const url=new URL(p.url);url.searchParams.set('attribute_'+colors.attribute,color);return '<a class="card-color" style="--swatch:'+(palette[color.toLowerCase()]||'#ddd')+'" href="'+esc(url.href)+'" aria-label="'+esc(p.title+' — '+color)+'" title="'+esc(color)+'"></a>'}).join('')+'</div>';}
 function card(p){
  return '<article class="product-card"><button class="wish '+(saved.includes(p.id)?'selected':'')+'" data-wish="'+p.id+'" aria-label="'+esc(t('Your Wishlist')+': '+p.title)+'">♡</button>'+
- (p.tags.some(tag=>tag.includes('waterproof'))?'<span class="badge">'+esc(t('Waterproof'))+'</span>':'')+
  '<a class="product-image" href="'+esc(p.url)+'"><img src="'+esc(image(p))+'" alt="'+esc(p.title)+'" loading="lazy">'+
  (p.images[1]?'<img class="second" src="'+esc(image(p,1))+'" alt="" loading="lazy">':'')+'</a>'+
  (p.type==='variable'?'<a class="quick-add home-add" href="'+esc(p.url)+'">'+esc(t('Choose options'))+'</a>':'<button class="quick-add" style="position:relative;width:100%" data-add="'+p.id+'" '+(p.available?'':'disabled')+'>'+esc(t(p.available?'Add to bag':'Sold out'))+'</button>')+
- '<a class="product-name" href="'+esc(p.url)+'">'+esc(p.title)+'</a><span class="price">'+esc(money(p.price))+(p.regular>p.price?'<del>'+esc(money(p.regular))+'</del>':'')+'</span>'+colorLinks(p)+'</article>';
+ '<a class="product-name" href="'+esc(p.url)+'">'+esc(p.title)+'</a><span class="price">'+(p.type==='variable'?'From ':'')+esc(money(p.price))+(p.type!=='variable'&&p.regular>p.price?'<del>'+esc(money(p.regular))+'</del>':'')+'</span>'+colorLinks(p)+'</article>';
 }
 function render(){
  if(!$('#product-grid'))return;
@@ -106,7 +105,7 @@ function cart(values={}){
  cartQueue=pending.catch(()=>{});return pending;
 }
 function cartView(c){
- openDrawer('Your Bag','<p class="shipping-progress">'+esc(t('Shipping calculated at checkout.'))+'</p>'+
+ openDrawer('Your Bag','<p class="shipping-progress">'+esc(window.seleneithCustomerInfo?.shippingSummary||t('Shipping calculated at checkout.'))+(window.seleneithCustomerInfo?.shippingUrl?'<br><a href="'+esc(seleneithCustomerInfo.shippingUrl)+'">Shipping and delivery details</a>':'')+'</p>'+
  (c.items.map(i=>'<div class="cart-item"><img src="'+esc(i.image)+'" alt=""><div><h3>'+esc(i.name)+'</h3><p>'+esc(money(i.price))+' × '+i.quantity+'</p><button data-qty="'+(i.quantity-1)+'" data-key="'+esc(i.key)+'" aria-label="−">−</button> '+i.quantity+' <button data-qty="'+(i.quantity+1)+'" data-key="'+esc(i.key)+'" aria-label="+">+</button> <button data-remove="'+esc(i.key)+'">'+esc(t('Remove'))+'</button> <button data-move="'+i.product_id+'" data-key="'+esc(i.key)+'">'+esc(t('Move to wishlist'))+'</button></div></div>').join('')||'<p>'+esc(t('Your bag is empty.'))+'</p>')+
  (c.items.length?'<p>'+esc(t('Subtotal'))+' <strong>'+esc(money(c.total))+'</strong></p><a class="primary" href="'+esc(studyConfig.checkout)+'">'+esc(t('Checkout'))+'</a>':''));
 }

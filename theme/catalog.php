@@ -3,6 +3,7 @@ defined('ABSPATH') || exit;
 function study_collections() {
     static $collections;
     if ($collections === null) $collections = json_decode(file_get_contents(WP_CONTENT_DIR.'/reference/collections.json'), true) ?: [];
+    $collections['bestseller'] = 'Featured Picks';
     return $collections;
 }
 function study_collection_slug() {
@@ -20,7 +21,7 @@ function study_product_tags($p) {
     if($p->is_type('variable')){$prices=$p->get_variation_prices(false);foreach($prices['price'] as $key=>$value){$r=(float)($prices['regular_price'][$key]??0);if($r>(float)$value && $r>0){$tags[]='discount__'.round(100*(1-(float)$value/$r)).'-off';$tags[]='highlight__sale';}}}
     if(!$p->is_type('variable') && $regular>$price && $regular>0){$tags[]='discount__'.round(100*(1-$price/$regular)).'-off';$tags[]='highlight__sale';}
     if(in_array('celebrity',$tags,true)||in_array('celebrity pick',$tags,true))$tags[]='highlight__celeb-pick';
-    return array_values(array_unique($tags));
+    return array_values(array_unique(array_filter($tags,fn($tag)=>!in_array(strtolower($tag),['celebrity','celebrity pick','highlight__celeb-pick'],true))));
 }
 function study_catalog_data($scope = null, $ids = null, $context = 'catalog') {
     $args = ['post_type'=>'product', 'posts_per_page'=>-1, 'orderby'=>['menu_order'=>'ASC','ID'=>'ASC'], 'post_status'=>'publish'];
@@ -80,9 +81,9 @@ add_action('pre_get_posts',function($query){
 },20);
 add_filter('posts_search',function($sql,$query){return $query->get('study_product_search')?'':$sql;},20,2);
 function study_navigation() {
-    return [
-        'BestSellers'=>['bestseller',[]], 'New In'=>['new-arrival',[]],
-        'Shop By'=>['all-products-collection',['all-products-collection','gold-collection','silver-collection','sale','earth-stone-collection','waterproof-jewelry','jewelry-set','men-collection','other-cute-stuff','street-style','boho-baddie','floral-collection','celestial-motifs','starfish-collection','hearts-bows','9-to-5-collection']],
+    $navigation = [
+        'Featured'=>['bestseller',[]], 'New In'=>['new-arrival',[]],
+        'Shop By'=>['all-products-collection',['all-products-collection','gold-collection','silver-collection','sale','earth-stone-collection','jewelry-set','men-collection','other-cute-stuff','street-style','boho-baddie','floral-collection','celestial-motifs','starfish-collection','hearts-bows','9-to-5-collection']],
         'Necklaces'=>['necklaces',['necklaces','gold-necklace','silver-necklace','cord-necklace','layered-necklace','choker-necklace','lariat-necklace','pendant-necklaces-1','chain-necklace','statement-necklaces']],
         'Bracelets'=>['bracelet-anklet',['bracelet-anklet','bracelets','bangles','anklet','rings-and-bracelets']],
         'Rings'=>['rings',['rings','stackable-rings','statement-rings','gold-rings','silver-rings']],
@@ -90,4 +91,12 @@ function study_navigation() {
         'Collections'=>['collections',['sub-rosa','eternal-sweetness','nocturnal-glimmer','rustic-soul','by-the-beach-collection-1','sunfire-mirage','soft-rituals','vida-del-mar']],
         'About Us'=>['about-us',[]]
     ];
+    foreach ($navigation as &$entry) {
+        $entry[1] = array_values(array_filter($entry[1], function($slug) {
+            $term = get_term_by('slug', $slug, 'product_cat');
+            return $term && $term->count > 0;
+        }));
+    }
+    unset($entry);
+    return $navigation;
 }

@@ -27,8 +27,8 @@ const variation=variants.find(v=>v.is_in_stock&&v.display_price===27);assert(var
  console.log('PASS: invalid/mixed cart requests are atomic, stock/nonce/anonymous boundaries and malformed search/signup inputs.');
  }
  await request('?study_language=fr');
- const found=await api('study_products',{search:'collier'});assert(found.length>0);
- const full=await request('?post_type=product&s=collier');assert.equal(full.status,200);assert(full.text.includes('Collier Goutte'),'Full page must find translated product');
+ const found=await api('study_products',{search:'necklace'});assert(found.length>0);
+ const full=await request('?post_type=product&s=necklace');assert.equal(full.status,200);assert(full.text.includes('Waterdrop Necklace'),'Full page must find English product despite old language link');
  assert((full.text.match(/class="product-card/g)||[]).length>0);assert(full.text.includes('page-numbers'),'Matching products must paginate');
  assert(!full.text.includes('id="catalog-data"'),'Search must not render the full catalog');
  const next=full.text.match(/<a class="next page-numbers" href="([^"]+)"/);assert(next,'Next page link');
@@ -41,6 +41,6 @@ const variation=variants.find(v=>v.is_in_stock&&v.display_price===27);assert(var
  // a later registration validation regresses. No mail-capable address is used.
  const bad=await request('my-account/?create_account=1',{method:'POST',body:new URLSearchParams({register:'1','woocommerce-register-nonce':regNonce,email:'invalid',first_name:'   ',last_name:'Test','password[]':'bad','password_confirmation[]':'bad',agree_privacy:'1'})});
  assert.equal(bad.status,200);assert(bad.text.includes('woocommerce-error'),'Malformed registration must produce form errors');
- console.log('PASS: French search/full-page routing, distinct pagination, empty results and malformed registration.');
+ console.log('PASS: English search/full-page routing, distinct pagination, empty results and malformed registration.');
 }finally{if(key)await api('study_cart',{remove:key})}
 console.log('Guest test cart cleaned when used; no order, payment, customer or email created.');

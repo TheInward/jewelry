@@ -27,7 +27,7 @@ foreach($ids as $id){
  foreach($zone->get_shipping_methods() as $method)$found[$method->id]=$method->instance_id;
  foreach(['flat_rate','free_shipping'] as $name){
   $instance=$found[$name]??$zone->add_shipping_method($name);
-  $settings=$name==='flat_rate'?['enabled'=>'yes','title'=>'Standard Shipping','tax_status'=>'none','cost'=>'7.99']:['enabled'=>'yes','title'=>'Free Shipping','requires'=>'min_amount','min_amount'=>'100','ignore_discounts'=>'no'];
+  $settings=$name==='flat_rate'?['enabled'=>'yes','title'=>'Standard Shipping','tax_status'=>'none','cost'=>'9.90']:['enabled'=>'yes','title'=>'Free Shipping','requires'=>'min_amount','min_amount'=>'79','ignore_discounts'=>'no'];
   update_option('woocommerce_'.$name.'_'.$instance.'_settings',$settings);
  }
 }
@@ -35,4 +35,4 @@ foreach($ids as $id){
 $fallback=new WC_Shipping_Zone(0);
 foreach($fallback->get_shipping_methods() as $method){$fallback->delete_shipping_method($method->instance_id);}
 WC_Cache_Helper::get_transient_version('shipping',true);
-WP_CLI::success('US, GB, CA and AU only; four shipping zones, no rest-of-world delivery. Existing USD7.99/100 shipping prices retained.');
+WP_CLI::success('US, GB, CA and AU only; four shipping zones, no rest-of-world delivery. USD9.90 shipping below USD79; free shipping from USD79 after discounts.');

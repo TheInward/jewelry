@@ -14,11 +14,11 @@ function study_product_card($p, $editorial = false) {
       <a class="product-image" href="<?php echo esc_url($p['url']); ?>"><?php foreach(array_slice($p['images'],0,2) as $n=>$image): ?><img <?php if($n)echo 'class="second"'; ?> src="<?php echo esc_url($image.(str_contains($image,'?')?'&':'?').'width=650'); ?>" alt="<?php echo $n?'':esc_attr($p['title']); ?>" loading="lazy"><?php endforeach; ?></a>
       <?php if($product->is_type('variable') && !$add_id): ?><a class="quick-add home-add" href="<?php echo esc_url($p['url']); ?>"><?php echo esc_html(study_t('Choose options')); ?></a><?php else: ?><button class="quick-add home-add" data-add="<?php echo (int)($add_id?:$p['id']); ?>" <?php disabled(!$p['available']); ?>><?php echo esc_html(($editorial&&$p['available']?'+ ':'').study_t($p['available']?'Add to bag':'Sold out')); ?></button><?php endif; ?>
       <a class="product-name" href="<?php echo esc_url($p['url']); ?>"><?php echo esc_html($p['title']); ?></a>
-      <?php if(array_filter($p['tags'],function($tag){return str_contains(strtolower($tag),'waterproof');})): ?><span class="card-detail"><?php echo esc_html(study_t('Waterproof')); ?></span><?php endif; ?>
+
       <span class="price"><?php if($editorial): ?>
         <?php if($offer['discount']): ?><del class="editorial-regular"><?php echo wp_kses_post(wc_price($offer['regular'])); ?></del><?php endif; ?>
         <span class="editorial-current<?php if($offer['discount'])echo ' discounted'; ?>"><?php echo wp_kses_post(wc_price($p['price'])); ?><?php if($offer['discount']): ?> <span class="editorial-discount">(-<?php echo (int)$offer['discount']; ?>% OFF)</span><?php endif; ?></span>
-      <?php else: ?><span class="desktop-card-price"><?php echo wp_kses_post($product->get_price_html()); ?></span><span class="mobile-card-price"><?php echo wp_kses_post(wc_price($p['price'])); ?></span><?php endif; ?></span>
+      <?php else: ?><span class="desktop-card-price"><?php echo wp_kses_post($product->get_price_html()); ?></span><span class="mobile-card-price"><?php if($product->is_type('variable'))echo 'From '; echo wp_kses_post(wc_price($p['price'])); ?></span><?php endif; ?></span>
       <?php study_card_swatches($product); ?>
     </article><?php
 }

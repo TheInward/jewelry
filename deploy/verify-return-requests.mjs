@@ -1,0 +1,40 @@
+import {chromium} from 'playwright-core';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {randomUUID} from 'node:crypto';
+const base=process.env.SELENEITH_PREVIEW_URL||'https://seleneith.com/';
+const marker='RETURN-E2E-'+randomUUID().replaceAll('-','').slice(0,20),email=marker.toLowerCase()+'@example.invalid';
+fs.mkdirSync('.runtime/trust-review',{recursive:true});
+fs.writeFileSync('.runtime/trust-review/return-test.json',JSON.stringify({marker,email},null,2));
+const browser=await chromium.launch({channel:'chrome',headless:true});
+try{
+ const context=await browser.newContext({viewport:{width:390,height:950}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(new URL('pages/start-a-return/',base).href,{waitUntil:'load',timeout:60000});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ assert(await page.locator('#return-request-form').isVisible());
+ await page.screenshot({path:'.runtime/trust-review/390-return-form.png',fullPage:true});
+ const nonce=await page.locator('[name=seleneith_return_nonce]').inputValue();const ajax=new URL('wp-admin/admin-ajax.php',base).href;
+ const fields={action:'seleneith_return_request',seleneith_return_nonce:nonce,email,order_number:marker,items:'TEST-SKU — Gold — quantity 1',reason:'damaged',details:'Automated acceptance test; not a real customer return.',website:'',acknowledge:'1'};
+ async function post(values,expected=200,headers={}){const r=await context.request.post(ajax,{form:values,headers});assert.equal(r.status(),expected);const data=await r.json();assert.equal(data.success,expected===200);return data;}
+ await post({...fields,seleneith_return_nonce:'invalid'},403);
+ await post({...fields,email:'bad email'},400);
+ await post({...fields,website:'bot.example'},400);
+ await post({...fields,acknowledge:'0'},400);
+ await post({...fields,order_number:'x'.repeat(81)},400);
+ await post({...fields,'email[]':'bad'},400);
+ await post(fields,403,{Origin:'https://not-the-store.example'});
+ await page.locator('#return-email').fill(email);await page.locator('#return-order').fill(marker);await page.locator('#return-items').fill(fields.items);await page.locator('#return-reason').selectOption(fields.reason);await page.locator('#return-details').fill(fields.details);await page.locator('[name=acknowledge]').check();
+ await page.locator('.return-submit').click();await page.locator('#return-result').waitFor({state:'visible',timeout:45000});
+ const reference=await page.locator('#return-reference').innerText();assert.match(reference,/^SR-[A-F0-9]{12}$/);assert((await page.locator('#return-result').innerText()).includes('48 hours'));assert(await page.locator('#return-request-form').isHidden());
+ fs.writeFileSync('.runtime/trust-review/return-test.json',JSON.stringify({marker,email,reference},null,2));
+ const duplicate=await post(fields);assert.equal(duplicate.data.reference,reference);
+ const fallback=await context.request.post(new URL('wp-admin/admin-post.php',base).href,{form:fields,maxRedirects:0});assert.equal(fallback.status(),302);const receipt=fallback.headers().location;assert(receipt.includes('receipt='));
+ await page.goto(receipt,{waitUntil:'load',timeout:60000});assert(await page.locator('#return-result').isVisible());
+ await page.goto(new URL('pages/start-a-return/?return_request=received&reference='+reference,base).href,{waitUntil:'load',timeout:60000});assert(await page.locator('#return-result').isHidden(),'Unsigned receipt must not display success');
+ const rest=await context.request.get(new URL('wp-json/wp/v2/seleneith_return',base).href);assert.equal(rest.status(),404);
+ const listing=await context.request.get(new URL('?post_type=seleneith_return',base).href);const body=await listing.text();assert(!body.includes(email)&&!body.includes(marker),'Private return details leaked');
+ await page.setViewportSize({width:1440,height:1000});await page.goto(new URL('pages/start-a-return/',base).href,{waitUntil:'load',timeout:60000});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await page.screenshot({path:'.runtime/trust-review/1440-return-form.png',fullPage:true});
+ assert.deepEqual(errors,[]);
+ console.log('PASS: real form → private return ticket; validation, nonce, origin, duplicate reference, signed no-JS receipt, private API/listing, 390/1440 layout and no JS errors. No email, order, payment or refund sent.');
+ console.log('Temporary test marker:',marker,'— remove using the private cleanup helper.');
+}finally{await browser.close();}
