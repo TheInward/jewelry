@@ -12,10 +12,11 @@
 
 商品和页面图片托管于本站 `wp-content/uploads/seleneith-media/`，文件清单和 SHA-256 位于 `reference/media-manifest.json`。图片二进制不进入 Git，服务器私有备份保留完整资源。初始化环境可从正式站点按清单取得资源。
 
-当前已配置多语言、多币种、顾客账户、收藏、商品规格、购物车、分区配送及售后政策。邮件已通过实收验证。实际支付尚未验收，完整翻译、正式库存与品牌自有素材仍需完善；开发提示和 noindex 保留。
+当前仅向美国、英国、加拿大和澳大利亚销售与配送，前台固定英语（无语言切换），保留 USD/GBP/CAD/AUD。已配置顾客账户、收藏、商品规格、购物车、分区配送及售后政策。邮件已通过实收验证。实际支付尚未验收，正式库存与品牌自有素材仍需完善；开发提示和 noindex 保留。
 
 ## 验证
 
+- `wp eval-file deploy/verify-sales-markets.php`：在目标 WordPress 环境校验四国白名单、英语与结账/配送拦截，不创建订单
 - `node deploy/verify-audit-live.mjs`：接口边界、搜索与分页；只使用临时访客购物车，不创建订单或发信
 - `node deploy/verify-storefront-state.mjs`：模拟收藏失败和并发、弹层延迟响应，不写真实账户
 - `node deploy/verify-domain.mjs`

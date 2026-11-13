@@ -2,11 +2,10 @@
 defined('ABSPATH') || exit;
 
 function study_languages() {
-    return ['en'=>['English','en_US'],'pl'=>['Polski','pl_PL'],'es'=>['Español','es_ES'],'fr'=>['Français','fr_FR'],'de'=>['Deutsch','de_DE'],'nl'=>['Nederlands','nl_NL'],'it'=>['Italiano','it_IT'],'sv'=>['Svenska','sv_SE'],'ja'=>['日本語','ja'],'ko'=>['한국어','ko_KR'],'pt-pt'=>['Português (Portugal)','pt_PT'],'el'=>['Ελληνικά','el'],'cs'=>['Čeština','cs_CZ'],'hu'=>['Magyar','hu_HU']];
+    return ['en'=>['English','en_US']];
 }
 function study_language() {
-    $value = sanitize_key($_GET['study_language'] ?? $_COOKIE['study_language'] ?? 'en');
-    return isset(study_languages()[$value]) ? $value : 'en';
+    return 'en';
 }
 function study_dictionary() {
     static $all, $extra;
@@ -46,16 +45,10 @@ function study_currency_options() {
 }
 function study_markets() {
     if (!function_exists('WC') || !WC()->countries) return ['US'=>['name'=>'United States','currency'=>'USD']];
-    $out = []; $currencies = study_currency_options(); $map = [];
-    $groups = [
-        'USD'=>'US EC SV PA TL PR GU VI VG BQ TC', 'EUR'=>'AT BE BG CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK AX AD MC SM VA BL GF GP MQ MF PM RE YT',
-        'GBP'=>'GB GG IM JE', 'AUD'=>'AU CX CC KI NR NF TV', 'CAD'=>'CA', 'HKD'=>'HK', 'CNY'=>'CN', 'JPY'=>'JP', 'KRW'=>'KR',
-        'AED'=>'AE','ALL'=>'AL','AWG'=>'AW','BAM'=>'BA','BSD'=>'BS','BZD'=>'BZ','CHF'=>'CH LI','CZK'=>'CZ','DKK'=>'DK FO GL','DOP'=>'DO','FJD'=>'FJ','HUF'=>'HU','IDR'=>'ID','ILS'=>'IL PS','ISK'=>'IS','JMD'=>'JM','KES'=>'KE','KYD'=>'KY','LBP'=>'LB','MAD'=>'MA EH','MDL'=>'MD','MKD'=>'MK','MOP'=>'MO','MUR'=>'MU','MYR'=>'MY','NGN'=>'NG','NZD'=>'NZ CK NU PN TK','PEN'=>'PE','PHP'=>'PH','PKR'=>'PK','PLN'=>'PL','QAR'=>'QA','RON'=>'RO','RSD'=>'RS','RWF'=>'RW','SAR'=>'SA','SEK'=>'SE','SGD'=>'SG','SHP'=>'SH','THB'=>'TH','TTD'=>'TT','TWD'=>'TW','TZS'=>'TZ','VND'=>'VN','XCD'=>'AG AI DM GD KN LC MS VC','XPF'=>'NC PF WF'
-    ];
-    foreach ($groups as $currency=>$countries) foreach (explode(' ', $countries) as $country) $map[$country] = $currency;
-    foreach (WC()->countries->get_countries() as $country=>$name) {
-        $currency = $map[$country] ?? '';
-        if (isset($currencies[$currency])) $out[$country] = ['name'=>$name, 'currency'=>$currency];
+    $out = []; $currencies = study_currency_options();
+    $countries = WC()->countries->get_countries();
+    foreach (['US'=>'USD','GB'=>'GBP','CA'=>'CAD','AU'=>'AUD'] as $country=>$currency) {
+        if (isset($currencies[$currency], $countries[$country])) $out[$country] = ['name'=>$countries[$country], 'currency'=>$currency];
     }
     return $out;
 }
@@ -98,7 +91,7 @@ function study_refresh_exchange_rates() {
     $data = json_decode(wp_remote_retrieve_body($response), true);
     if (($data['result'] ?? '') !== 'success' || ($data['base_code'] ?? '') !== 'USD' || ($data['rates']['USD'] ?? 0) != 1) return false;
     $settings = get_option('_wcml_settings', []);
-    $supported = explode(' ', 'USD AED ALL AUD AWG BAM BSD BZD CAD CHF CNY CZK DKK DOP EUR FJD GBP HKD HUF IDR ILS ISK JMD JPY KES KRW KYD LBP MAD MDL MKD MOP MUR MYR NGN NZD PEN PHP PKR PLN QAR RON RSD RWF SAR SEK SGD SHP THB TTD TWD TZS VND XCD XPF');
+    $supported = explode(' ', 'USD GBP CAD AUD');
     foreach ($supported as $code) {
         if (!isset($data['rates'][$code]) || !is_numeric($data['rates'][$code]) || $data['rates'][$code] <= 0) continue;
         $settings['currency_options'][$code] = array_merge($settings['currency_options'][$code] ?? [], [
@@ -109,6 +102,7 @@ function study_refresh_exchange_rates() {
             'languages'=>['en'=>1], 'location_mode'=>'all', 'countries'=>[]
         ]);
     }
+    $settings['currency_options'] = array_intersect_key($settings['currency_options'], array_flip($supported));
     $settings['enable_multi_currency'] = WCML_MULTI_CURRENCIES_INDEPENDENT;
     $settings['currency_mode'] = 'by_location';
     $settings['currencies_order'] = array_keys($settings['currency_options']);
