@@ -2,13 +2,14 @@
 defined('ABSPATH')||exit;
 do_action('woocommerce_before_customer_login_form');
 $register=isset($_GET['create_account'])&&get_option('woocommerce_enable_myaccount_registration')==='yes';
+$login_username=isset($_POST['username'])&&is_string($_POST['username'])?wp_unslash($_POST['username']):'';
 ?>
 <div class="account-auth" id="customer_login">
  <section data-account-panel="login" <?php if($register)echo 'hidden'; ?>>
   <h1><?php echo esc_html(study_t("Log in")); ?></h1>
   <form class="woocommerce-form woocommerce-form-login login" method="post" action="<?php echo esc_url(wc_get_page_permalink('myaccount')); ?>">
    <?php do_action('woocommerce_login_form_start'); ?>
-   <label for="username" class="screen-reader-text"><?php echo esc_html(study_t("Email")); ?></label><input class="input-text" type="text" name="username" id="username" autocomplete="username" placeholder="<?php echo esc_attr(study_t("Email")); ?>" required value="<?php echo isset($_POST['username'])?esc_attr(wp_unslash($_POST['username'])):''; ?>">
+   <label for="username" class="screen-reader-text"><?php echo esc_html(study_t("Email")); ?></label><input class="input-text" type="text" name="username" id="username" autocomplete="username" placeholder="<?php echo esc_attr(study_t("Email")); ?>" required value="<?php echo esc_attr($login_username); ?>">
    <div class="password-field"><label for="password" class="screen-reader-text"><?php echo esc_html(study_t("Password")); ?></label><input class="input-text" type="password" name="password" id="password" autocomplete="current-password" placeholder="<?php echo esc_attr(study_t("Password")); ?>" required><button type="button" class="password-toggle" data-password-target="password" aria-label="Show password"><?php echo esc_html(study_t("Show")); ?></button></div>
    <?php do_action('woocommerce_login_form'); ?>
    <p class="account-forgot"><a href="<?php echo esc_url(wp_lostpassword_url()); ?>"><?php echo esc_html(study_t("Forgot password?")); ?></a></p>
