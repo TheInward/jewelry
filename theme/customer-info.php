@@ -2,7 +2,7 @@
 defined('ABSPATH') || exit;
 
 function seleneith_business_details() {
-    return ['legal_name'=>'上海出手得卢贸易有限公司', 'address'=>'No. 37 Xinggong Road, Zhongxing Town, Chongming District, Shanghai, China', 'address_original'=>'上海市崇明区中兴镇兴工路37号'];
+    return ['legal_name'=>'Shanghai Chushou Delu Trading Co., Ltd.', 'address'=>'No. 37 Xinggong Road, Zhongxing Town, Chongming District, Shanghai, China'];
 }
 
 function seleneith_shipping_summary() {

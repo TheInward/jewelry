@@ -53,7 +53,7 @@ HTML],
  'blogs'=>['Jewelry Care Notes','<h2>Small habits for everyday care</h2><p>Keep pieces separate to help avoid scratches and tangles. Wipe gently with a soft cloth after wear, then store in a dry place.</p><p>Cleaning methods depend on the material and finish. Avoid abrasive cleaners and direct contact with perfume or household chemicals.</p><p><a href="/pages/jewelry-care/">Read the jewelry care guide</a> or <a href="/pages/contact/">ask us about a piece</a>.</p>']
 ];
 $business = seleneith_business_details();
-$business_html = '<section class="business-information"><h2>Business information</h2><p>Operated by '.esc_html($business['legal_name']).'</p><address>'.esc_html($business['address']).'<br>'.esc_html($business['address_original']).'</address><p>This is our business contact address. For returns, please submit a request and wait for the return instructions and appropriate return address.</p></section>';
+$business_html = '<section class="business-information"><h2>Business information</h2><p>Operated by '.esc_html($business['legal_name']).'</p><address>'.esc_html($business['address']).'</address><p>This is our business contact address. For returns, please submit a request and wait for the return instructions and appropriate return address.</p></section>';
 foreach(['about-us','contact','terms-and-conditions','privacy-policy'] as $slug)$pages[$slug][1].=$business_html;
 $pages['start-a-return']=['Start a Return','<p>Send us your order details and the items you wish to return. Our team will review your request and reply by email within 48 hours. The return address will be provided with your instructions.</p>[seleneith_return_form]'];
 return $pages;
