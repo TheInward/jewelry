@@ -47,7 +47,7 @@ function study_markets() {
     if (!function_exists('WC') || !WC()->countries) return ['US'=>['name'=>'United States','currency'=>'USD']];
     $out = []; $currencies = study_currency_options();
     $countries = WC()->countries->get_countries();
-    foreach (['US'=>'USD','GB'=>'GBP','CA'=>'CAD','AU'=>'AUD'] as $country=>$currency) {
+    foreach (['US'=>'USD','CA'=>'CAD','AU'=>'AUD'] as $country=>$currency) {
         if (isset($currencies[$currency], $countries[$country])) $out[$country] = ['name'=>$countries[$country], 'currency'=>$currency];
     }
     return $out;
@@ -91,7 +91,7 @@ function study_refresh_exchange_rates() {
     $data = json_decode(wp_remote_retrieve_body($response), true);
     if (($data['result'] ?? '') !== 'success' || ($data['base_code'] ?? '') !== 'USD' || ($data['rates']['USD'] ?? 0) != 1) return false;
     $settings = get_option('_wcml_settings', []);
-    $supported = explode(' ', 'USD GBP CAD AUD');
+    $supported = explode(' ', 'USD CAD AUD');
     foreach ($supported as $code) {
         if (!isset($data['rates'][$code]) || !is_numeric($data['rates'][$code]) || $data['rates'][$code] <= 0) continue;
         $settings['currency_options'][$code] = array_merge($settings['currency_options'][$code] ?? [], [

@@ -1,6 +1,6 @@
 <?php
 defined('ABSPATH')||exit;
-function seleneith_sales_countries(){return ['US','GB','CA','AU'];}
+function seleneith_sales_countries(){return ['US','CA','AU'];}
 function seleneith_excluded_countries(){return array_values(array_diff(array_keys(WC()->countries->get_countries()),seleneith_sales_countries()));}
 foreach (['woocommerce_countries_allowed_countries','woocommerce_countries_shipping_countries'] as $hook) {
  add_filter($hook,fn($countries)=>array_intersect_key($countries,array_flip(seleneith_sales_countries())));

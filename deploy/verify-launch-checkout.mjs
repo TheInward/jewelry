@@ -19,7 +19,7 @@ const text=html=>html.replace(/<[^>]+>/g,' ').replace(/&[^;]+;/g,' ').replace(/\
 const amount=html=>Number((html.match(/<bdi>([\s\S]*?)<\/bdi>/)?.[1]||'').replace(/<[^>]+>|&[^;]+;/g,'').replace(/[^0-9.\-]/g,''));
 try{
  const added=await cart({add:variation.variation_id});key=added.items[0].key;
- for(const [country,currency,state,postcode,city] of [['US','USD','NY','10001','New York'],['GB','GBP','','SW1A 1AA','London'],['CA','CAD','ON','M5V 3L9','Toronto'],['AU','AUD','NSW','2000','Sydney']]){
+ for(const [country,currency,state,postcode,city] of [['US','USD','NY','10001','New York'],['CA','CAD','ON','M5V 3L9','Toronto'],['AU','AUD','NSW','2000','Sydney']]){
   for(const quantity of [1,3]){
    const ch=await request('checkout/?study_market='+country+'&study_language=fr');
    const locale=JSON.parse(ch.match(/var studyLocale = (\{[^\n]*\});/)[1]);assert.equal(locale.language,'en');assert.equal(locale.currency,currency);
@@ -33,7 +33,7 @@ try{
    const free=quantity===3;assert(table.includes(free?'free_shipping':'flat_rate'),`${country}: missing expected shipping`);
    assert(!table.includes(free?'flat_rate':'free_shipping'),`${country}: wrong shipping method`);
    const shipping=free?0:amount(table.match(/class="woocommerce-shipping-totals shipping"[\s\S]*?<\/tr>/)?.[0]||'');
-   const expected=free?0:9.90*(c.items[0].price/27);assert(Math.abs(shipping-expected)<0.04,`${currency}: converted shipping ${shipping}/${expected}`);
+   const baseShipping={US:9.90,CA:12.90,AU:15.90}[country];const expected=free?0:baseShipping*(c.items[0].price/27);assert(Math.abs(shipping-expected)<0.04,`${currency}: converted shipping ${shipping}/${expected}`);
    const taxRows=table.match(/<tr class="(?:tax-rate[^"<]*|tax-total)"[\s\S]*?<\/tr>/g)||[];
    const tax=taxRows.reduce((sum,row)=>sum+amount(row),0);const total=amount(table.match(/class="order-total"[\s\S]*?<\/tr>/)?.[0]||'');
    assert(Math.abs(total-c.total-shipping-tax)<0.04,`${currency}: total mismatch`);
@@ -47,4 +47,4 @@ try{
  if(key){await cart({remove:key});assert.equal((await cart()).count,0);}
  fs.mkdirSync('.runtime/launch-audit',{recursive:true});fs.writeFileSync('.runtime/launch-audit/checkout.json',JSON.stringify(report,null,2)+'\n');
 }
-console.log('Four countries / eight checkout reviews passed; no order, payment or email submitted. Guest cart cleared.');
+console.log('Three countries / six checkout reviews passed; no order, payment or email submitted. Guest cart cleared.');

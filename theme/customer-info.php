@@ -6,14 +6,12 @@ function seleneith_business_details() {
 }
 
 function seleneith_shipping_summary() {
-    $threshold = 79.0; $fee = 9.90;
-    foreach (get_option('seleneith_shipping_zone_ids', []) as $id) {
-        foreach ((new WC_Shipping_Zone($id))->get_shipping_methods(true) as $method) {
-            $settings = get_option('woocommerce_'.$method->id.'_'.$method->instance_id.'_settings', []);
-            if ($method->id === 'flat_rate' && is_numeric($settings['cost'] ?? null)) $fee = (float)$settings['cost'];
-            if ($method->id === 'free_shipping' && is_numeric($settings['min_amount'] ?? null)) $threshold = (float)$settings['min_amount'];
-        }
-        break;
+    $threshold = 59.0; $market = study_market(); $zone_index = ['US'=>0,'CA'=>2,'AU'=>3][$market] ?? 0;
+    $ids = get_option('seleneith_shipping_zone_ids', []); $zone = new WC_Shipping_Zone($ids[$zone_index] ?? 0); $fee = ['US'=>9.90,'CA'=>12.90,'AU'=>15.90][$market] ?? 9.90;
+    foreach ($zone->get_shipping_methods(true) as $method) {
+        $settings = get_option('woocommerce_'.$method->id.'_'.$method->instance_id.'_settings', []);
+        if ($method->id === 'flat_rate' && is_numeric($settings['cost'] ?? null)) $fee = (float)$settings['cost'];
+        if ($method->id === 'free_shipping' && is_numeric($settings['min_amount'] ?? null)) $threshold = (float)$settings['min_amount'];
     }
     $currency = get_woocommerce_currency();
     $rate = $currency === 'USD' ? 1 : (float)(study_currency_options()[$currency]['rate'] ?? 0);

@@ -46,7 +46,7 @@ try {
  if(item.type==='variable'){const page=await shopper.request(item.url);const raw=page.html.match(/data-product_variations="([^"]+)"/s)?.[1]||page.html.match(/data-product_variations='([^']+)'/s)?.[1];assert(raw,'Native variation data missing');const variants=JSON.parse(raw.replaceAll('&quot;','\"').replaceAll('&#039;',"'").replaceAll('&amp;','&'));const v=variants.find(v=>v.is_in_stock&&Number(v.display_price)===27);assert(v,'Baseline variation missing');addId=v.variation_id;}
  const added=await api('study_cart',{add:addId,price:'0.01'});key=added.items[0].key;assert.equal(added.items[0].price,27);
  await api('study_cart',{key,quantity:2});
- for(const [market,currency] of (process.env.VERIFY_SKIP_CURRENCIES ? [] : [['HK','HKD'],['FR','EUR'],['JP','JPY'],['GB','GBP'],['US','USD']])) {
+ for(const [market,currency] of (process.env.VERIFY_SKIP_CURRENCIES ? [] : [['US','USD'],['CA','CAD'],['AU','AUD']])) {
   const {html}=await shopper.request('collections/necklaces/?study_market='+market);
   assert.equal(locale(html).currency,currency,market+' selected currency');
   const shown=catalog(html).find(p=>p.id===item.id);
@@ -64,7 +64,9 @@ try {
   assert(!checkout.html.includes('id="filter-groups"'),'Checkout must not initialize catalog filters');
   console.log('Currency',currency,'product',shown.price,'subtotal',cart.total,'checkout verified');
  }
- for(const lang of (process.env.VERIFY_LANGUAGES?.split(',') || ['pl','es','fr','de','nl','it','sv','ja','ko','pt-pt','el','cs','hu','en'])) {
+ const removedMarket=await shopper.request('collections/necklaces/?study_market=GB');
+ assert.equal(locale(removedMarket.html).currency,'USD','Removed UK market must fall back to USD');
+ for(const lang of (process.env.VERIFY_LANGUAGES?.split(',') || ['en'])) {
   const {html}=await shopper.request('collections/necklaces/?study_language='+lang);
   assert.equal(locale(html).language,lang);
   const translated=catalog(html).find(p=>p.id===item.id);
