@@ -21,7 +21,7 @@ add_action('init', function() {
     $capabilities = array_fill_keys(['edit_post','read_post','delete_post','edit_posts','edit_others_posts','publish_posts','read_private_posts','delete_posts','delete_private_posts','delete_published_posts','delete_others_posts','edit_private_posts','edit_published_posts'], 'manage_woocommerce');
     $capabilities['create_posts'] = 'do_not_allow';
     register_post_type('seleneith_return', [
-        'labels'=>['name'=>'退货申请','singular_name'=>'退货申请','menu_name'=>'退货申请'],
+        'labels'=>['name'=>'Return Requests','singular_name'=>'Return Request','menu_name'=>'Return Requests'],
         'public'=>false,'publicly_queryable'=>false,'exclude_from_search'=>true,'show_ui'=>true,
         'show_in_menu'=>'woocommerce','show_in_rest'=>false,'rewrite'=>false,'query_var'=>false,
         'supports'=>['title'],'capabilities'=>$capabilities,'map_meta_cap'=>false

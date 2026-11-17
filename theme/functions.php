@@ -10,6 +10,7 @@ require_once __DIR__.'/signup.php';
 require_once __DIR__.'/storefront.php';
 require_once __DIR__.'/customer-info.php';
 require_once __DIR__.'/returns.php';
+require_once __DIR__.'/supply-chain.php';
 add_action('after_setup_theme', function(){ add_theme_support('title-tag'); add_theme_support('woocommerce'); add_theme_support('wc-product-gallery-slider'); });
 add_action('wp_enqueue_scripts', function(){ wp_enqueue_style('study',get_stylesheet_uri(),[],filemtime(__DIR__.'/style.css')); wp_enqueue_style('study-home',get_template_directory_uri().'/home.css',['study','study-markets'],filemtime(__DIR__.'/home.css')); wp_enqueue_script('study',get_template_directory_uri().'/app.js',[],filemtime(__DIR__.'/app.js'),true); wp_enqueue_script('study-signup',get_template_directory_uri().'/signup.js',[],filemtime(__DIR__.'/signup.js'),true); wp_localize_script('study','studyConfig',['ajax'=>admin_url('admin-ajax.php'),'nonce'=>wp_create_nonce('study-cart'),'loggedIn'=>is_user_logged_in(),'checkout'=>function_exists('wc_get_checkout_url')?wc_get_checkout_url():'']); });
 add_filter('wp_robots',function($r){$r['noindex']=true;$r['nofollow']=true;return $r;});
